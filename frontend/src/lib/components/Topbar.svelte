@@ -7,6 +7,7 @@
 	import { ICON_MAP } from '$lib/data/icons.js';
 	import { magnetic } from '$lib/actions/magnetic.js';
 	import { snappy } from '$lib/motion/springs.js';
+	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
 
 	const MenuIcon   = ICON_MAP['Menu'];
 	const SearchIcon = ICON_MAP['Search'];
@@ -25,7 +26,6 @@
 </script>
 
 <header class="topbar" style:height="{$topbarH + $taglineH}px">
-	<!-- Subtle inner highlight line at top -->
 	<span class="top-shine" aria-hidden="true"></span>
 
 	<div class="topbar-inner" style:height="{$topbarH}px">
@@ -75,6 +75,8 @@
 				<SearchIcon size={16} />
 			</button>
 
+			<ThemeSwitcher />
+
 			<Show when="signed-in">
 				<div class="clerk-user-btn">
 					<UserButton afterSignOutUrl="/sign-in" />
@@ -99,7 +101,6 @@
 		</div>
 	</div>
 
-	<!-- Bottom accent line -->
 	<span class="bottom-accent" aria-hidden="true"></span>
 </header>
 
@@ -113,22 +114,18 @@
 		flex-direction: column;
 		overflow: hidden;
 
-		/* Richer background: subtle gradient over dark base */
-		background: linear-gradient(
-			135deg,
-			rgba(22, 28, 38, 0.97) 0%,
-			rgba(18, 22, 30, 0.99) 60%,
-			rgba(20, 26, 35, 0.97) 100%
-		);
+		background: var(--topbar-bg);
 
-		/* Layered shadow: neomorphic depth + outer glow */
 		box-shadow:
-			-6px -6px 14px rgba(255, 255, 255, 0.035),
-			 6px  6px 14px rgba(0, 0, 0, 0.6),
-			 0    0   40px rgba(0, 0, 0, 0.4),
-			inset 0 1px 0 rgba(255, 255, 255, 0.06);
+			-6px -6px 14px var(--shadow-light),
+			 6px  6px 14px var(--shadow-dark),
+			 0    0   40px rgba(0, 0, 0, 0.3),
+			inset 0 1px 0 var(--border-subtle);
 
 		transition: box-shadow 0.3s ease;
+
+		/* Captured independently by View Transitions API — stays locked during page transitions */
+		view-transition-name: topbar;
 	}
 
 	.top-shine {
@@ -138,9 +135,9 @@
 		background: linear-gradient(
 			90deg,
 			transparent 0%,
-			rgba(255, 255, 255, 0.12) 30%,
-			rgba(0, 212, 255, 0.18) 50%,
-			rgba(255, 255, 255, 0.12) 70%,
+			rgba(255, 255, 255, 0.1) 30%,
+			rgba(var(--accent-primary-rgb), 0.2) 50%,
+			rgba(255, 255, 255, 0.1) 70%,
 			transparent 100%
 		);
 		border-radius: 1px;
@@ -155,8 +152,8 @@
 		background: linear-gradient(
 			90deg,
 			transparent 0%,
-			rgba(0, 212, 255, 0.25) 25%,
-			rgba(0, 212, 255, 0.08) 75%,
+			rgba(var(--accent-primary-rgb), 0.25) 25%,
+			rgba(var(--accent-primary-rgb), 0.08) 75%,
 			transparent 100%
 		);
 		pointer-events: none;
@@ -187,13 +184,13 @@
 	.logo-mark {
 		width: 32px; height: 32px;
 		border-radius: 9px;
-		background: linear-gradient(135deg, #00d4ff22 0%, #00d4ff08 100%);
-		border: 1px solid rgba(0, 212, 255, 0.25);
+		background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.15) 0%, rgba(var(--accent-primary-rgb), 0.05) 100%);
+		border: 1px solid rgba(var(--accent-primary-rgb), 0.25);
 		display: flex; align-items: center; justify-content: center;
 		font-size: 15px; font-weight: 800;
-		color: #00d4ff;
-		text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
-		box-shadow: 0 0 12px rgba(0, 212, 255, 0.1), inset 0 1px 0 rgba(255,255,255,0.06);
+		color: var(--accent-primary);
+		text-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.6);
+		box-shadow: 0 0 12px rgba(var(--accent-primary-rgb), 0.1), inset 0 1px 0 rgba(255,255,255,0.06);
 		flex-shrink: 0;
 	}
 
@@ -303,7 +300,7 @@
 	}
 
 	.search-btn {
-		border: 1px solid rgba(255, 255, 255, 0.07);
+		border: 1px solid var(--border-subtle);
 		border-radius: 10px;
 		padding: 6px 10px;
 		gap: 6px;
@@ -312,24 +309,23 @@
 		min-width: 36px;
 	}
 
-	/* Clerk UserButton wrapper — align it with our topbar height */
+	/* Clerk UserButton wrapper */
 	.clerk-user-btn {
 		display: flex;
 		align-items: center;
 	}
 
-	/* Style the Clerk avatar button to match our dark theme */
 	.clerk-user-btn :global(.cl-userButtonTrigger) {
 		width: 34px;
 		height: 34px;
 		border-radius: 50%;
-		border: 1px solid rgba(0, 212, 255, 0.3);
-		box-shadow: 0 0 12px rgba(0, 212, 255, 0.12);
+		border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
+		box-shadow: 0 0 12px rgba(var(--accent-primary-rgb), 0.12);
 		transition: box-shadow 0.15s;
 	}
 	.clerk-user-btn :global(.cl-userButtonTrigger:hover) {
-		box-shadow: 0 0 20px rgba(0, 212, 255, 0.25);
-		border-color: rgba(0, 212, 255, 0.5);
+		box-shadow: 0 0 20px rgba(var(--accent-primary-rgb), 0.25);
+		border-color: rgba(var(--accent-primary-rgb), 0.5);
 	}
 
 	.sign-in-pill {
@@ -337,9 +333,9 @@
 		align-items: center;
 		padding: 6px 16px;
 		border-radius: 12px;
-		border: 1px solid rgba(0, 212, 255, 0.28);
-		background: rgba(0, 212, 255, 0.07);
-		color: var(--accent-cyan);
+		border: 1px solid rgba(var(--accent-primary-rgb), 0.28);
+		background: rgba(var(--accent-primary-rgb), 0.07);
+		color: var(--accent-primary);
 		text-decoration: none;
 		font-size: 12.5px;
 		font-weight: 600;
@@ -347,9 +343,9 @@
 		transition: background 0.15s, box-shadow 0.15s, border-color 0.15s;
 	}
 	.sign-in-pill:hover {
-		background: rgba(0, 212, 255, 0.14);
-		border-color: rgba(0, 212, 255, 0.45);
-		box-shadow: 0 0 14px rgba(0, 212, 255, 0.15);
+		background: rgba(var(--accent-primary-rgb), 0.14);
+		border-color: rgba(var(--accent-primary-rgb), 0.45);
+		box-shadow: 0 0 14px rgba(var(--accent-primary-rgb), 0.15);
 	}
 
 	.hamburger {
@@ -358,9 +354,9 @@
 		gap: 7px;
 		padding: 6px 14px 6px 10px;
 		border-radius: 12px;
-		border: 1px solid rgba(0, 212, 255, 0.22);
-		background: rgba(0, 212, 255, 0.07);
-		color: var(--accent-cyan);
+		border: 1px solid rgba(var(--accent-primary-rgb), 0.22);
+		background: rgba(var(--accent-primary-rgb), 0.07);
+		color: var(--accent-primary);
 		cursor: pointer;
 		font-size: 12px;
 		font-weight: 600;
@@ -370,9 +366,9 @@
 	}
 
 	.hamburger:hover {
-		background: rgba(0, 212, 255, 0.14);
-		border-color: rgba(0, 212, 255, 0.4);
-		box-shadow: 0 0 14px rgba(0, 212, 255, 0.15);
+		background: rgba(var(--accent-primary-rgb), 0.14);
+		border-color: rgba(var(--accent-primary-rgb), 0.4);
+		box-shadow: 0 0 14px rgba(var(--accent-primary-rgb), 0.15);
 	}
 
 	.hamburger-label {
@@ -385,7 +381,7 @@
 	.tagline-bar {
 		overflow: hidden;
 		flex-shrink: 0;
-		border-top: 1px solid rgba(255, 255, 255, 0.04);
+		border-top: 1px solid var(--border-subtle);
 		position: relative;
 		z-index: 2;
 	}

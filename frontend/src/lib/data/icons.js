@@ -1,11 +1,11 @@
 import {
 	Rocket, Wrench, LayoutDashboard, Activity,
 	PieChart, Shield, Menu, X, Search, User,
-	ChevronRight, ChevronDown
+	ChevronRight, ChevronDown, Palette, Check
 } from 'lucide-svelte';
 
 export const ICON_MAP = {
 	Rocket, Wrench, LayoutDashboard, Activity,
 	PieChart, Shield, Menu, X, Search, User,
-	ChevronRight, ChevronDown
+	ChevronRight, ChevronDown, Palette, Check
 };

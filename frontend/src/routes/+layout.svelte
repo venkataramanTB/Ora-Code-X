@@ -1,15 +1,26 @@
 <script>
 	import '../app.css';
+
+	import { PUBLIC_CLERK_PUBLISHABLE_KEY } from '$env/static/public';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import { onNavigate } from '$app/navigation';
+
 	import { ClerkProvider } from 'svelte-clerk';
+
 	import { mouseX, mouseY } from '$lib/stores/mouse.js';
-	import { scrolled } from '$lib/stores/theme.js';
+	import {
+		scrolled,
+		clerkVars,
+		initTheme
+	} from '$lib/stores/theme.js';
+	import { sidebarOpen } from '$lib/stores/navigation.js';
+
 	import OrbBackground from '$lib/components/OrbBackground.svelte';
 	import Topbar from '$lib/components/Topbar.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 
-	let { children } = $props();
+	let { data, children } = $props();
 
 	const SCROLL_THRESHOLD = 72;
 
@@ -18,45 +29,72 @@
 		$page.url.pathname.startsWith('/sign-up')
 	);
 
-	const clerkAppearance = {
+	const clerkAppearance = $derived({
 		variables: {
-			colorBackground:        '#111620',
-			colorInputBackground:   '#0d1117',
-			colorInputText:         '#e8edf5',
-			colorPrimary:           '#00d4ff',
-			colorPrimaryForeground: '#0a0e14',
-			colorText:              '#e8edf5',
-			colorTextSecondary:     '#6b7a99',
-			colorNeutral:           '#4a5568',
-			colorDanger:            '#ff4d6d',
-			borderRadius:           '12px',
-			fontFamily:             '"Inter", -apple-system, sans-serif',
-			fontSize:               '14px',
-			spacingUnit:            '16px',
-		},
-	};
+			...$clerkVars,
+			borderRadius: '12px',
+			fontFamily: '"Inter", -apple-system, sans-serif',
+			fontSize: '14px',
+			spacingUnit: '16px'
+		}
+	});
+
+	function navDepth(path) {
+		return path.split('/').filter(Boolean).length;
+	}
+
+	onNavigate((nav) => {
+		sidebarOpen.set(false);
+
+		if (!document.startViewTransition) return;
+
+		const fromDepth = navDepth(nav.from?.url.pathname ?? '/');
+		const toDepth = navDepth(nav.to?.url.pathname ?? '/');
+
+		document.documentElement.dataset.navDir =
+			toDepth < fromDepth ? 'back' : 'forward';
+
+		return new Promise((resolve) => {
+			const vt = document.startViewTransition(async () => {
+				resolve();
+				await nav.complete;
+			});
+
+			vt.finished.finally(() => {
+				delete document.documentElement.dataset.navDir;
+			});
+		});
+	});
 
 	onMount(() => {
+		initTheme();
+
 		function onMouseMove(e) {
-			mouseX.set((e.clientX / window.innerWidth)  * 2 - 1);
+			mouseX.set((e.clientX / window.innerWidth) * 2 - 1);
 			mouseY.set((e.clientY / window.innerHeight) * 2 - 1);
 		}
+
 		function onScroll() {
 			scrolled.set(window.scrollY > SCROLL_THRESHOLD);
 		}
 
 		window.addEventListener('mousemove', onMouseMove, { passive: true });
-		window.addEventListener('scroll',    onScroll,    { passive: true });
+		window.addEventListener('scroll', onScroll, { passive: true });
+
 		onScroll();
 
 		return () => {
 			window.removeEventListener('mousemove', onMouseMove);
-			window.removeEventListener('scroll',    onScroll);
+			window.removeEventListener('scroll', onScroll);
 		};
 	});
 </script>
 
-<ClerkProvider appearance={clerkAppearance}>
+<ClerkProvider
+	{data}
+	publishableKey={PUBLIC_CLERK_PUBLISHABLE_KEY}
+	appearance={clerkAppearance}
+>
 	<OrbBackground />
 
 	{#if !isAuthRoute}

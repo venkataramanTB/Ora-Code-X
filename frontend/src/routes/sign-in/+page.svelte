@@ -38,13 +38,13 @@
 	.brand-mark {
 		width: 44px; height: 44px;
 		border-radius: 13px;
-		background: linear-gradient(135deg, rgba(0,212,255,0.2) 0%, rgba(0,212,255,0.06) 100%);
-		border: 1px solid rgba(0,212,255,0.3);
+		background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.2) 0%, rgba(var(--accent-primary-rgb), 0.06) 100%);
+		border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
 		display: flex; align-items: center; justify-content: center;
 		font-size: 20px; font-weight: 800;
-		color: #00d4ff;
-		text-shadow: 0 0 14px rgba(0,212,255,0.7);
-		box-shadow: 0 0 20px rgba(0,212,255,0.12);
+		color: var(--accent-primary);
+		text-shadow: 0 0 14px rgba(var(--accent-primary-rgb), 0.7);
+		box-shadow: 0 0 20px rgba(var(--accent-primary-rgb), 0.12);
 	}
 
 	.brand-name {

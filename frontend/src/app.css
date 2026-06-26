@@ -10,11 +10,16 @@
 
 :root {
 	/* Neomorphic foundation — ALL surfaces must use --bg-base as background */
-	--bg-base: #13171f;
+	--bg-base:    #13171f;
+	--bg-surface: #0d1117;
 	--shadow-light: rgba(255, 255, 255, 0.045);
 	--shadow-dark:  rgba(0, 0, 0, 0.55);
 
-	/* Accent colors */
+	/* Theme accent — changes per theme */
+	--accent-primary:     #00d4ff;
+	--accent-primary-rgb: 0,212,255;
+
+	/* Named accent palette — per-module tile colors (intentionally fixed, don't follow theme) */
 	--accent-cyan:   #00d4ff;
 	--accent-gold:   #f5a623;
 	--accent-pink:   #ff4d6d;
@@ -27,6 +32,106 @@
 	--text-primary: #c8d0e0;
 	--text-muted:   #6b7a99;
 	--text-accent:  #e8edf5;
+
+	/* Borders */
+	--border-subtle: rgba(255, 255, 255, 0.06);
+
+	/* Topbar */
+	--topbar-bg: rgba(16, 20, 27, 0.97);
+
+	/* Orbs */
+	--orb-1:       #00d4ff;
+	--orb-2:       #f5a623;
+	--orb-3:       #3c1478;
+	--orb-opacity: 0.07;
+}
+
+/* ── Per-theme variable overrides ────────────────────────── */
+
+html[data-theme="void"] {
+	--bg-base:            #0f0d1a;
+	--bg-surface:         #0a0814;
+	--shadow-light:       rgba(120, 90, 200, 0.06);
+	--shadow-dark:        rgba(0, 0, 0, 0.65);
+	--accent-primary:     #b39ddb;
+	--accent-primary-rgb: 179,157,219;
+	--text-primary:       #c4b8e8;
+	--text-muted:         #6b5f99;
+	--text-accent:        #e8e2f5;
+	--border-subtle:      rgba(179, 157, 219, 0.08);
+	--topbar-bg:          rgba(13, 11, 22, 0.97);
+	--orb-1:              #b39ddb;
+	--orb-2:              #7c4dff;
+	--orb-3:              #1a0050;
+}
+
+html[data-theme="ember"] {
+	--bg-base:            #1a0e11;
+	--bg-surface:         #120a0d;
+	--shadow-light:       rgba(200, 50, 80, 0.06);
+	--shadow-dark:        rgba(0, 0, 0, 0.65);
+	--accent-primary:     #ff4d6d;
+	--accent-primary-rgb: 255,77,109;
+	--text-primary:       #e0c4cb;
+	--text-muted:         #8a5a65;
+	--text-accent:        #f5e2e6;
+	--border-subtle:      rgba(255, 77, 109, 0.08);
+	--topbar-bg:          rgba(22, 12, 15, 0.97);
+	--orb-1:              #ff4d6d;
+	--orb-2:              #ff9800;
+	--orb-3:              #4a0020;
+}
+
+html[data-theme="forest"] {
+	--bg-base:            #0a1512;
+	--bg-surface:         #060f0c;
+	--shadow-light:       rgba(0, 180, 100, 0.06);
+	--shadow-dark:        rgba(0, 0, 0, 0.65);
+	--accent-primary:     #00e676;
+	--accent-primary-rgb: 0,230,118;
+	--text-primary:       #b8d4c4;
+	--text-muted:         #4d8a6a;
+	--text-accent:        #e2f5ec;
+	--border-subtle:      rgba(0, 230, 118, 0.08);
+	--topbar-bg:          rgba(9, 18, 16, 0.97);
+	--orb-1:              #00e676;
+	--orb-2:              #4fc3f7;
+	--orb-3:              #003320;
+}
+
+html[data-theme="solar"] {
+	--bg-base:            #181208;
+	--bg-surface:         #100e04;
+	--shadow-light:       rgba(220, 160, 40, 0.06);
+	--shadow-dark:        rgba(0, 0, 0, 0.65);
+	--accent-primary:     #f5a623;
+	--accent-primary-rgb: 245,166,35;
+	--text-primary:       #d8c8a0;
+	--text-muted:         #8a7040;
+	--text-accent:        #f5ecda;
+	--border-subtle:      rgba(245, 166, 35, 0.08);
+	--topbar-bg:          rgba(22, 16, 8, 0.97);
+	--orb-1:              #f5a623;
+	--orb-2:              #ff4d6d;
+	--orb-3:              #3a2800;
+}
+
+html[data-theme="arctic"] {
+	--bg-base:            #eef1f7;
+	--bg-surface:         #ffffff;
+	--shadow-light:       rgba(255, 255, 255, 0.9);
+	--shadow-dark:        rgba(0, 0, 0, 0.12);
+	--accent-primary:     #0096cc;
+	--accent-primary-rgb: 0,150,204;
+	--text-primary:       #3a4560;
+	--text-muted:         #8090b0;
+	--text-accent:        #1a2540;
+	--border-subtle:      rgba(0, 0, 0, 0.07);
+	--topbar-bg:          rgba(238, 241, 247, 0.97);
+	--orb-1:              #0096cc;
+	--orb-2:              #7c4dff;
+	--orb-3:              #c0d8f0;
+	--orb-opacity:        0.12;
 }
 
 html, body {
@@ -87,7 +192,6 @@ html, body {
 }
 
 /* ── Dynamic shadow tilt ─────────────────────────────────── */
-/* use:tilt sets --tilt-x and --tilt-y as unitless degree numbers */
 
 .neo-tiltable {
 	box-shadow:
@@ -98,8 +202,8 @@ html, body {
 /* ── X character accent ──────────────────────────────────── */
 
 .x-char {
-	color: var(--accent-cyan);
-	text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+	color: var(--accent-primary);
+	text-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.5);
 }
 
 /* ── Marquee animation ───────────────────────────────────── */
@@ -139,52 +243,122 @@ html, body {
 	}
 }
 
+/* ── Page transitions (View Transitions API) ─────────────── */
+/* Topbar and orbs set view-transition-name in their own
+   components so they float above the content swap.           */
+
+@media (prefers-reduced-motion: no-preference) {
+	/* Forward: old page shrinks back into depth */
+	@keyframes vt-exit-forward {
+		to {
+			opacity: 0;
+			transform: scale(0.91) translateY(18px);
+			filter: blur(8px);
+		}
+	}
+
+	/* Forward: new page rises up from depth */
+	@keyframes vt-enter-forward {
+		from {
+			opacity: 0;
+			transform: scale(0.95) translateY(-14px);
+			filter: blur(6px);
+		}
+	}
+
+	/* Back: old page zooms out (going back to a wider view) */
+	@keyframes vt-exit-back {
+		to {
+			opacity: 0;
+			transform: scale(1.07) translateY(-18px);
+			filter: blur(8px);
+		}
+	}
+
+	/* Back: new page comes in from a wider perspective */
+	@keyframes vt-enter-back {
+		from {
+			opacity: 0;
+			transform: scale(1.05) translateY(14px);
+			filter: blur(6px);
+		}
+	}
+
+	/* Default (forward) */
+	::view-transition-old(root) {
+		animation: vt-exit-forward 280ms cubic-bezier(0.4, 0, 1, 1) forwards;
+		mix-blend-mode: normal;
+	}
+	::view-transition-new(root) {
+		animation: vt-enter-forward 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+		mix-blend-mode: normal;
+	}
+
+	/* Back navigation */
+	html[data-nav-dir="back"]::view-transition-old(root) {
+		animation: vt-exit-back 280ms cubic-bezier(0.4, 0, 1, 1) forwards;
+	}
+	html[data-nav-dir="back"]::view-transition-new(root) {
+		animation: vt-enter-back 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	/* Topbar + orbs: locked in place, no animation */
+	::view-transition-old(topbar),
+	::view-transition-new(topbar),
+	::view-transition-old(orbs),
+	::view-transition-new(orbs) {
+		animation: none;
+		mix-blend-mode: normal;
+	}
+}
+
 /* ── Clerk component overrides ───────────────────────────── */
 /* Target .cl-* class names directly — inline variables alone
    don't win against Clerk's internal stylesheet for inputs.  */
 
 .cl-card, .cl-cardBox {
-	background: linear-gradient(160deg, #161c28 0%, #111620 100%) !important;
+	background: linear-gradient(160deg, var(--bg-base) 0%, var(--bg-surface) 100%) !important;
 	box-shadow:
-		-12px -12px 28px rgba(255,255,255,0.04),
-		 12px  12px 28px rgba(0,0,0,0.6),
-		 0 0 0 1px rgba(255,255,255,0.06) !important;
+		-12px -12px 28px var(--shadow-light),
+		 12px  12px 28px var(--shadow-dark),
+		 0 0 0 1px var(--border-subtle) !important;
 	border-radius: 20px !important;
 }
 
 /* Header */
 .cl-headerTitle {
-	color: #e8edf5 !important;
+	color: var(--text-accent) !important;
 	font-size: 20px !important;
 	font-weight: 700 !important;
 	letter-spacing: -0.015em !important;
 }
 .cl-headerSubtitle {
-	color: #6b7a99 !important;
+	color: var(--text-muted) !important;
 	font-size: 13.5px !important;
 }
 
-/* Inputs — this is the main fix for the white background */
+/* Inputs */
 .cl-formFieldInput {
-	background: #0d1117 !important;
-	border: 1px solid rgba(255, 255, 255, 0.09) !important;
+	background: var(--bg-surface) !important;
+	border: 1px solid var(--border-subtle) !important;
 	border-radius: 10px !important;
-	color: #e8edf5 !important;
+	color: var(--text-accent) !important;
 	font-size: 14px !important;
 	transition: border-color 0.15s, box-shadow 0.15s !important;
 }
 .cl-formFieldInput:focus {
-	border-color: rgba(0, 212, 255, 0.45) !important;
-	box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1) !important;
+	border-color: rgba(var(--accent-primary-rgb), 0.45) !important;
+	box-shadow: 0 0 0 3px rgba(var(--accent-primary-rgb), 0.1) !important;
 	outline: none !important;
 }
 .cl-formFieldInput::placeholder {
-	color: #3d4a63 !important;
+	color: var(--text-muted) !important;
+	opacity: 0.5 !important;
 }
 
 /* Field labels */
 .cl-formFieldLabel {
-	color: #8a9ab8 !important;
+	color: var(--text-muted) !important;
 	font-size: 12.5px !important;
 	font-weight: 500 !important;
 	letter-spacing: 0.03em !important;
@@ -192,60 +366,391 @@ html, body {
 
 /* Primary button */
 .cl-formButtonPrimary {
-	background: linear-gradient(135deg, rgba(0,212,255,0.18), rgba(0,212,255,0.32)) !important;
-	border: 1px solid rgba(0, 212, 255, 0.4) !important;
+	background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.18), rgba(var(--accent-primary-rgb), 0.32)) !important;
+	border: 1px solid rgba(var(--accent-primary-rgb), 0.4) !important;
 	border-radius: 11px !important;
-	color: #00d4ff !important;
+	color: var(--accent-primary) !important;
 	font-size: 14px !important;
 	font-weight: 600 !important;
 	letter-spacing: 0.03em !important;
-	box-shadow: 0 0 18px rgba(0, 212, 255, 0.12) !important;
+	box-shadow: 0 0 18px rgba(var(--accent-primary-rgb), 0.12) !important;
 	transition: box-shadow 0.15s, background 0.15s !important;
 }
 .cl-formButtonPrimary:hover {
-	background: linear-gradient(135deg, rgba(0,212,255,0.26), rgba(0,212,255,0.42)) !important;
-	box-shadow: 0 0 28px rgba(0, 212, 255, 0.22) !important;
+	background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.26), rgba(var(--accent-primary-rgb), 0.42)) !important;
+	box-shadow: 0 0 28px rgba(var(--accent-primary-rgb), 0.22) !important;
 }
 
 /* Social / OAuth buttons */
 .cl-socialButtonsBlockButton {
-	background: rgba(255, 255, 255, 0.04) !important;
-	border: 1px solid rgba(255, 255, 255, 0.09) !important;
+	background: var(--bg-surface) !important;
+	border: 1px solid var(--border-subtle) !important;
 	border-radius: 10px !important;
-	color: #c8d0e0 !important;
+	color: var(--text-primary) !important;
 }
 .cl-socialButtonsBlockButton:hover {
-	background: rgba(255, 255, 255, 0.07) !important;
-	border-color: rgba(255, 255, 255, 0.15) !important;
+	background: rgba(var(--accent-primary-rgb), 0.06) !important;
+	border-color: rgba(var(--accent-primary-rgb), 0.2) !important;
 }
 .cl-socialButtonsBlockButtonText {
-	color: #c8d0e0 !important;
+	color: var(--text-primary) !important;
 }
 
 /* Divider */
 .cl-dividerLine {
-	background: rgba(255, 255, 255, 0.07) !important;
+	background: var(--border-subtle) !important;
 }
 .cl-dividerText {
-	color: #3d4a63 !important;
+	color: var(--text-muted) !important;
 	font-size: 12px !important;
 }
 
 /* Footer links */
-.cl-footerActionText { color: #6b7a99 !important; }
+.cl-footerActionText { color: var(--text-muted) !important; }
 .cl-footerActionLink {
-	color: #00d4ff !important;
+	color: var(--accent-primary) !important;
 	font-weight: 600 !important;
 }
-.cl-footerActionLink:hover { color: #4dd9ff !important; }
+.cl-footerActionLink:hover {
+	color: var(--accent-primary) !important;
+	opacity: 0.8;
+}
 
-/* Internal nav links (back buttons, etc.) */
-.cl-backLink, .cl-identityPreviewText { color: #8a9ab8 !important; }
-.cl-backLink:hover { color: #00d4ff !important; }
+/* ═══════════════════════════════════════════════════════════════
+   TWO-AXIS APPEARANCE SYSTEM
+   Axis 1: data-color  (dark | light)
+   Axis 2: data-style  (neo | minimal | skeu | brutal | maximal)
+   Blocks cascade in order — style overrides color which overrides :root
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── COLOR MODE: LIGHT ───────────────────────────────────────── */
+
+html[data-color="light"] {
+	--bg-base:            #eef1f7;
+	--bg-surface:         #ffffff;
+	--shadow-light:       rgba(255, 255, 255, 0.9);
+	--shadow-dark:        rgba(0, 0, 0, 0.12);
+	--accent-primary:     #0096cc;
+	--accent-primary-rgb: 0,150,204;
+	--text-primary:       #3a4560;
+	--text-muted:         #8090b0;
+	--text-accent:        #1a2540;
+	--border-subtle:      rgba(0, 0, 0, 0.08);
+	--topbar-bg:          rgba(238, 241, 247, 0.97);
+	--orb-1:              #0096cc;
+	--orb-2:              #7c4dff;
+	--orb-3:              #c0d8f0;
+	--orb-opacity:        0.12;
+}
+
+/* ── STYLE: MINIMAL ─────────────────────────────────────────── */
+
+html[data-style="minimal"] .neo-convex,
+html[data-style="minimal"] .neo-concave,
+html[data-style="minimal"] .neo-flat,
+html[data-style="minimal"] .neo-tiltable {
+	box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 0 0 1px var(--border-subtle) !important;
+}
+html[data-style="minimal"] .elev-1 {
+	box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px var(--border-subtle) !important;
+}
+html[data-style="minimal"] .elev-2 {
+	box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 0 0 1px var(--border-subtle) !important;
+}
+html[data-style="minimal"] .elev-3 {
+	box-shadow: 0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px var(--border-subtle) !important;
+}
+html[data-style="minimal"] .elev-4 {
+	box-shadow: 0 8px 24px rgba(0,0,0,0.14), 0 0 0 1px var(--border-subtle) !important;
+}
+html[data-style="minimal"] .topbar {
+	border-radius: 10px !important;
+	box-shadow: 0 2px 10px rgba(0,0,0,0.1), 0 0 0 1px var(--border-subtle) !important;
+}
+html[data-style="minimal"] .sidebar {
+	border-radius: 0 12px 12px 0 !important;
+	box-shadow: 2px 0 12px rgba(0,0,0,0.08), 0 0 0 1px var(--border-subtle) !important;
+}
+html[data-style="minimal"] .tile {
+	border-radius: 10px !important;
+	box-shadow: 0 2px 6px rgba(0,0,0,0.08), 0 0 0 1px var(--border-subtle) !important;
+	transition: box-shadow 0.18s ease, transform 0.18s ease !important;
+}
+html[data-style="minimal"] .tile:hover:not(.pressing) {
+	box-shadow: 0 8px 24px rgba(0,0,0,0.14), 0 0 0 1px rgba(var(--accent-primary-rgb), 0.25) !important;
+	transform: translateY(-3px) !important;
+}
+html[data-style="minimal"] .card {
+	border-radius: 12px !important;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.10), 0 0 0 1px var(--border-subtle) !important;
+}
+html[data-style="minimal"] .chip {
+	border-radius: 6px !important;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px var(--border-subtle) !important;
+}
+html[data-style="minimal"] .cl-card,
+html[data-style="minimal"] .cl-cardBox {
+	border-radius: 12px !important;
+	box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 0 0 1px var(--border-subtle) !important;
+}
+
+/* ── STYLE: SKEUOMORPHIC ─────────────────────────────────────── */
+
+html[data-style="skeu"] {
+	--shadow-light: rgba(255, 255, 255, 0.12);
+	--shadow-dark:  rgba(0, 0, 0, 0.72);
+}
+html[data-style="skeu"] .neo-convex,
+html[data-style="skeu"] .elev-2,
+html[data-style="skeu"] .elev-3,
+html[data-style="skeu"] .elev-4 {
+	background:
+		linear-gradient(
+			145deg,
+			color-mix(in srgb, var(--bg-base) 88%, white 12%),
+			color-mix(in srgb, var(--bg-base) 94%, black 6%)
+		) !important;
+	box-shadow:
+		-8px -8px 16px var(--shadow-light),
+		 8px  8px 18px var(--shadow-dark),
+		 inset 0  1px 0 rgba(255, 255, 255, 0.10),
+		 inset 0 -1px 0 rgba(0, 0, 0, 0.20) !important;
+}
+html[data-style="skeu"] .topbar {
+	border-radius: 14px !important;
+	background:
+		linear-gradient(
+			180deg,
+			color-mix(in srgb, var(--topbar-bg) 82%, white 18%),
+			var(--topbar-bg)
+		) !important;
+	box-shadow:
+		-8px -8px 20px var(--shadow-light),
+		 8px  8px 20px var(--shadow-dark),
+		 inset 0  1px 0 rgba(255, 255, 255, 0.12),
+		 0 0 40px rgba(0, 0, 0, 0.30) !important;
+}
+html[data-style="skeu"] .sidebar {
+	border-radius: 0 20px 20px 0 !important;
+	background:
+		linear-gradient(
+			160deg,
+			color-mix(in srgb, var(--bg-base) 90%, white 10%),
+			var(--bg-base)
+		) !important;
+}
+html[data-style="skeu"] .tile {
+	border-radius: 18px !important;
+	background:
+		linear-gradient(
+			145deg,
+			color-mix(in srgb, var(--bg-base) 88%, white 12%),
+			color-mix(in srgb, var(--bg-base) 95%, black 5%)
+		) !important;
+}
+html[data-style="skeu"] .card {
+	border-radius: 20px !important;
+	background:
+		linear-gradient(
+			160deg,
+			color-mix(in srgb, var(--bg-base) 90%, white 10%),
+			var(--bg-base)
+		) !important;
+}
+
+/* ── STYLE: BRUTALISM ────────────────────────────────────────── */
+
+html[data-style="brutal"] .neo-convex,
+html[data-style="brutal"] .neo-concave,
+html[data-style="brutal"] .neo-flat,
+html[data-style="brutal"] .elev-1,
+html[data-style="brutal"] .elev-2,
+html[data-style="brutal"] .elev-3,
+html[data-style="brutal"] .elev-4 {
+	box-shadow:     4px 4px 0 var(--accent-primary) !important;
+	border:         2px solid var(--accent-primary)  !important;
+	border-radius:  0 !important;
+}
+html[data-style="brutal"] .topbar {
+	top:           0 !important;
+	left:          0 !important;
+	right:         0 !important;
+	border-radius: 0 !important;
+	border:        none !important;
+	border-bottom: 3px solid var(--accent-primary) !important;
+	box-shadow:    0 4px 0 var(--accent-primary)   !important;
+}
+html[data-style="brutal"] .main-content {
+	padding-top: 110px !important;
+}
+html[data-style="brutal"] .sidebar {
+	border-radius: 0 !important;
+	border-right:  3px solid var(--accent-primary) !important;
+	box-shadow:    none !important;
+}
+html[data-style="brutal"] .tile {
+	border-radius: 0 !important;
+	box-shadow:    6px 6px 0 var(--accent-primary) !important;
+	border:        2px solid var(--accent-primary)  !important;
+	transition:    box-shadow 0.12s ease, transform 0.12s ease !important;
+}
+html[data-style="brutal"] .tile:hover:not(.pressing) {
+	box-shadow: 10px 10px 0 var(--accent-primary) !important;
+	transform:  translate(-3px, -3px) !important;
+}
+html[data-style="brutal"] .card {
+	border-radius: 0 !important;
+	box-shadow:    8px 8px 0 var(--accent-primary) !important;
+	border:        2px solid var(--accent-primary)  !important;
+}
+html[data-style="brutal"] .chip {
+	border-radius: 0 !important;
+	box-shadow:    2px 2px 0 var(--accent-primary) !important;
+	border:        1px solid var(--accent-primary)  !important;
+}
+html[data-style="brutal"] .cl-card,
+html[data-style="brutal"] .cl-cardBox {
+	border-radius: 0 !important;
+	box-shadow:    8px 8px 0 var(--accent-primary) !important;
+	border:        2px solid var(--accent-primary)  !important;
+}
+html[data-style="brutal"] .cl-formButtonPrimary {
+	border-radius: 0 !important;
+}
+html[data-style="brutal"] .cl-formFieldInput {
+	border-radius: 0 !important;
+}
+
+/* ── STYLE: MAXIMALISM ───────────────────────────────────────── */
+
+html[data-style="maximal"] {
+	--orb-opacity: 0.18;
+}
+html[data-style="maximal"] .neo-convex,
+html[data-style="maximal"] .elev-2,
+html[data-style="maximal"] .elev-3,
+html[data-style="maximal"] .elev-4 {
+	box-shadow:
+		-12px -12px 24px var(--shadow-light),
+		 12px  12px 24px var(--shadow-dark),
+		 0 0 0 1px rgba(var(--accent-primary-rgb), 0.15),
+		 0 0 30px rgba(var(--accent-primary-rgb), 0.06) !important;
+	border: 1px solid rgba(var(--accent-primary-rgb), 0.15) !important;
+}
+html[data-style="maximal"] .topbar {
+	border-radius: 22px !important;
+	background: linear-gradient(
+		135deg,
+		var(--topbar-bg),
+		color-mix(in srgb, var(--topbar-bg) 88%, rgba(var(--accent-primary-rgb), 1) 12%)
+	) !important;
+	box-shadow:
+		-8px  -8px 20px var(--shadow-light),
+		 8px   8px 20px var(--shadow-dark),
+		 0 0 0 1px rgba(var(--accent-primary-rgb), 0.20),
+		 0 0 50px rgba(var(--accent-primary-rgb), 0.08),
+		 0 0 60px rgba(0, 0, 0, 0.30) !important;
+}
+html[data-style="maximal"] .sidebar {
+	border-radius: 0 28px 28px 0 !important;
+	box-shadow:
+		-12px -12px 24px var(--shadow-light),
+		 12px  12px 24px var(--shadow-dark),
+		 0 0 0 1px rgba(var(--accent-primary-rgb), 0.12) !important;
+}
+html[data-style="maximal"] .tile {
+	border-radius: 20px !important;
+	box-shadow:
+		-10px -10px 20px var(--shadow-light),
+		 10px  10px 20px var(--shadow-dark),
+		 0 0 0 1px rgba(var(--accent-primary-rgb), 0.10),
+		 0 0 30px rgba(var(--accent-primary-rgb), 0.06) !important;
+}
+html[data-style="maximal"] .tile:hover:not(.pressing) {
+	box-shadow:
+		-16px -16px 32px var(--shadow-light),
+		 16px  16px 32px var(--shadow-dark),
+		 0 0 0 1px rgba(var(--accent-primary-rgb), 0.30),
+		 0 0 60px rgba(var(--accent-primary-rgb), 0.14) !important;
+}
+html[data-style="maximal"] .tile-glow {
+	opacity: 0.75 !important;
+}
+html[data-style="maximal"] .card {
+	border-radius: 28px !important;
+	box-shadow:
+		-20px -20px 40px var(--shadow-light),
+		 20px  20px 40px var(--shadow-dark),
+		 0 0 0 1px rgba(var(--accent-primary-rgb), 0.12),
+		 0 0 80px rgba(var(--accent-primary-rgb), 0.07) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   APPEARANCE-CHANGE TRANSITIONS
+   data-vt-type="style"  → theatrical bloom dissolve
+   data-vt-type="color"  → smooth luminance cross-fade
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: no-preference) {
+	/* ── Style-change: dramatic bloom ─── */
+	@keyframes vt-style-old {
+		to {
+			opacity: 0;
+			filter: blur(14px) brightness(1.3);
+			transform: scale(0.94);
+		}
+	}
+	@keyframes vt-style-new {
+		from {
+			opacity: 0;
+			filter: blur(18px) brightness(1.6);
+			transform: scale(1.06);
+		}
+	}
+
+	html[data-vt-type="style"]::view-transition-old(root) {
+		animation: vt-style-old 320ms cubic-bezier(0.4, 0, 1, 1) forwards;
+		mix-blend-mode: normal;
+	}
+	html[data-vt-type="style"]::view-transition-new(root) {
+		animation: vt-style-new 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+		mix-blend-mode: normal;
+	}
+
+	/* Lock topbar + orbs during style transitions too */
+	html[data-vt-type="style"]::view-transition-old(topbar),
+	html[data-vt-type="style"]::view-transition-new(topbar),
+	html[data-vt-type="style"]::view-transition-old(orbs),
+	html[data-vt-type="style"]::view-transition-new(orbs) {
+		animation: none;
+		mix-blend-mode: normal;
+	}
+
+	/* ── Color-change: luminance cross-fade ─── */
+	@keyframes vt-color-old {
+		to { opacity: 0; filter: brightness(1.15); }
+	}
+	@keyframes vt-color-new {
+		from { opacity: 0; filter: brightness(0.85); }
+	}
+
+	html[data-vt-type="color"]::view-transition-old(root) {
+		animation: vt-color-old 240ms ease forwards;
+		mix-blend-mode: normal;
+	}
+	html[data-vt-type="color"]::view-transition-new(root) {
+		animation: vt-color-new 380ms ease both;
+		mix-blend-mode: normal;
+	}
+}
+
+/* Internal nav links */
+.cl-backLink, .cl-identityPreviewText { color: var(--text-muted) !important; }
+.cl-backLink:hover { color: var(--accent-primary) !important; }
 
 /* Error messages */
 .cl-formFieldErrorText, .cl-alert[data-variant="danger"] {
-	color: #ff4d6d !important;
+	color: var(--accent-pink) !important;
 }
 
 /* "Development mode" badge */

@@ -4,9 +4,21 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />
+		<!-- Anti-flash: set data-color + data-style before first paint so CSS vars cascade instantly -->
+		<script>
+			try {
+				var _vc = ['dark','light'];
+				var _vs = ['neo','minimal','skeu','brutal','maximal'];
+				var _c  = localStorage.getItem('oracodex-color');
+				var _s  = localStorage.getItem('oracodex-style');
+				var _h  = document.documentElement;
+				_h.setAttribute('data-color', _vc.indexOf(_c) !== -1 ? _c : 'dark');
+				_h.setAttribute('data-style', _vs.indexOf(_s) !== -1 ? _s : 'neo');
+			} catch (e) {}
+		</script>
 		%sveltekit.head%
 	</head>
-	<body style="background:#13171f" data-sveltekit-preload-data="hover">
+	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>
