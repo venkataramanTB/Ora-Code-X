@@ -2,7 +2,7 @@ import { spring } from 'svelte/motion';
 import { snappy } from '$lib/motion/springs.js';
 
 export function magnetic(node, options = {}) {
-	const { radius = 60, strength = 0.3 } = options;
+	const { radius = 44, strength = 0.12 } = options;
 	let currentX = 0;
 	let currentY = 0;
 

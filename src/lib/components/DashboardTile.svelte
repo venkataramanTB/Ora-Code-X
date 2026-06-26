@@ -20,9 +20,9 @@
 	const Icon = $derived(ICON_MAP[iconName] ?? ICON_MAP['PieChart']);
 
 	const CFG = {
-		hero:  { elev: 4, icon: 72, radius: 24, angle: 6  },
-		wide:  { elev: 3, icon: 52, radius: 20, angle: 8  },
-		small: { elev: 2, icon: 48, radius: 16, angle: 8  }
+		hero:  { elev: 4, icon: 72, radius: 24, angle: 2  },
+		wide:  { elev: 3, icon: 52, radius: 20, angle: 3  },
+		small: { elev: 2, icon: 48, radius: 16, angle: 3  }
 	};
 	const cfg = $derived(CFG[size] ?? CFG.small);
 

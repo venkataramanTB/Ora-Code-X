@@ -7,8 +7,8 @@ export function parallax(node, depth = 0.05) {
 	let d = depth;
 
 	const unsub = mousePos.subscribe(({ x, y }) => {
-		const dx = x * 120 * d;
-		const dy = y * 80 * d;
+		const dx = x * 45 * d;
+		const dy = y * 30 * d;
 		node.style.transform = `translate(${dx}px, ${dy}px)`;
 	});
 

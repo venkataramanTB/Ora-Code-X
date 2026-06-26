@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import { snappy } from '$lib/motion/springs.js';
 
 export function tilt(node, options = {}) {
-	let maxAngle = options.maxAngle ?? 8;
+	let maxAngle = options.maxAngle ?? 3;
 
 	const rxSpring = spring(0, snappy);
 	const rySpring = spring(0, snappy);
@@ -42,7 +42,7 @@ export function tilt(node, options = {}) {
 
 	return {
 		update(newOptions) {
-			maxAngle = newOptions.maxAngle ?? 8;
+			maxAngle = newOptions.maxAngle ?? 3;
 		},
 		destroy() {
 			node.removeEventListener('mousemove', onMouseMove);

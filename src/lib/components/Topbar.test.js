@@ -11,9 +11,9 @@ describe('Topbar', () => {
 		expect(getAllByText(/OraCode/).length).toBeGreaterThan(0);
 	});
 
-	it('shows nav links when not scrolled', () => {
-		const { getAllByRole } = render(Topbar);
-		expect(getAllByRole('link').length).toBeGreaterThan(0);
+	it('shows nav when not scrolled', () => {
+		const { getByRole } = render(Topbar);
+		expect(getByRole('navigation', { name: 'Top navigation' })).toBeTruthy();
 	});
 
 	it('shows hamburger when scrolled', async () => {
@@ -22,9 +22,9 @@ describe('Topbar', () => {
 		expect(await findByLabelText('Open navigation')).toBeTruthy();
 	});
 
-	it('hides nav links when scrolled', () => {
+	it('hides nav when scrolled', () => {
 		scrolled.set(true);
-		const { queryAllByRole } = render(Topbar);
-		expect(queryAllByRole('link').length).toBe(0);
+		const { queryByRole } = render(Topbar);
+		expect(queryByRole('navigation', { name: 'Top navigation' })).toBeNull();
 	});
 });
