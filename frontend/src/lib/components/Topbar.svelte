@@ -7,7 +7,7 @@
 	import { ICON_MAP } from '$lib/data/icons.js';
 	import { magnetic } from '$lib/actions/magnetic.js';
 	import { snappy } from '$lib/motion/springs.js';
-	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
+	import AppearancePicker from '$lib/components/AppearancePicker.svelte';
 
 	const MenuIcon   = ICON_MAP['Menu'];
 	const SearchIcon = ICON_MAP['Search'];
@@ -75,7 +75,7 @@
 				<SearchIcon size={16} />
 			</button>
 
-			<ThemeSwitcher />
+			<AppearancePicker />
 
 			<Show when="signed-in">
 				<div class="clerk-user-btn">

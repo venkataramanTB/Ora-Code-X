@@ -759,3 +759,284 @@ html[data-style="maximal"] .card {
 	border-color: rgba(255, 152, 0, 0.2) !important;
 	color: #ff9800 !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   PER-STYLE COLOUR DNA
+   Compound selectors [data-style][data-color] are more specific
+   than single-axis blocks and override them cleanly.
+   Each visual style has its own distinct colour identity for
+   both dark and light modes.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── MINIMAL — cool slate, no colour noise ──────────────────── */
+
+html[data-style="minimal"][data-color="dark"] {
+	--bg-base:            #0f1115;
+	--bg-surface:         #171a22;
+	--accent-primary:     #94a3b8;
+	--accent-primary-rgb: 148,163,184;
+	--shadow-light:       rgba(255,255,255,0.025);
+	--shadow-dark:        rgba(0,0,0,0.45);
+	--text-primary:       #8896a8;
+	--text-muted:         #4a5568;
+	--text-accent:        #cbd5e1;
+	--border-subtle:      rgba(255,255,255,0.07);
+	--topbar-bg:          rgba(15,17,21,0.97);
+	--orb-1:              #94a3b8;
+	--orb-2:              #64748b;
+	--orb-3:              #1e2533;
+	--orb-opacity:        0.04;
+}
+
+html[data-style="minimal"][data-color="light"] {
+	--bg-base:            #f8fafc;
+	--bg-surface:         #ffffff;
+	--accent-primary:     #2563eb;
+	--accent-primary-rgb: 37,99,235;
+	--shadow-light:       rgba(255,255,255,1.0);
+	--shadow-dark:        rgba(0,0,0,0.06);
+	--text-primary:       #374151;
+	--text-muted:         #9ca3af;
+	--text-accent:        #111827;
+	--border-subtle:      rgba(0,0,0,0.08);
+	--topbar-bg:          rgba(248,250,252,0.97);
+	--orb-1:              #2563eb;
+	--orb-2:              #7c3aed;
+	--orb-3:              #dbeafe;
+	--orb-opacity:        0.06;
+}
+
+/* ── SKEUOMORPHIC DARK — warm copper & brass ────────────────── */
+
+html[data-style="skeu"][data-color="dark"] {
+	--bg-base:            #13100b;
+	--bg-surface:         #1c1710;
+	--accent-primary:     #c4882a;
+	--accent-primary-rgb: 196,136,42;
+	--shadow-light:       rgba(200,150,60,0.10);
+	--shadow-dark:        rgba(0,0,0,0.75);
+	--text-primary:       #c8a870;
+	--text-muted:         #7a6040;
+	--text-accent:        #e0c090;
+	--border-subtle:      rgba(196,136,42,0.14);
+	--topbar-bg:          rgba(19,16,11,0.97);
+	--orb-1:              #c4882a;
+	--orb-2:              #8b4513;
+	--orb-3:              #2c1800;
+	--orb-opacity:        0.09;
+}
+
+/* SKEU surfaces in dark get warm copper gradient treatment */
+html[data-style="skeu"][data-color="dark"] .neo-convex,
+html[data-style="skeu"][data-color="dark"] .elev-2,
+html[data-style="skeu"][data-color="dark"] .elev-3,
+html[data-style="skeu"][data-color="dark"] .elev-4 {
+	background:
+		linear-gradient(
+			145deg,
+			color-mix(in srgb, #13100b 82%, #c4882a 18%),
+			#13100b
+		) !important;
+}
+
+/* ── SKEUOMORPHIC LIGHT — warm walnut wood ──────────────────── */
+
+html[data-style="skeu"][data-color="light"] {
+	--bg-base:            #d4a96a;
+	--bg-surface:         #e8c988;
+	--accent-primary:     #7b3f0e;
+	--accent-primary-rgb: 123,63,14;
+	--shadow-light:       rgba(255,220,140,0.85);
+	--shadow-dark:        rgba(60,30,5,0.35);
+	--text-primary:       #3d1f08;
+	--text-muted:         #8b5e30;
+	--text-accent:        #1a0900;
+	--border-subtle:      rgba(80,40,5,0.20);
+	--topbar-bg:          rgba(185,140,75,0.97);
+	--orb-1:              #cd853f;
+	--orb-2:              #daa520;
+	--orb-3:              #8b4513;
+	--orb-opacity:        0.16;
+}
+
+/* Wood grain texture on all neo surfaces */
+html[data-style="skeu"][data-color="light"] .neo-convex,
+html[data-style="skeu"][data-color="light"] .elev-2,
+html[data-style="skeu"][data-color="light"] .elev-3,
+html[data-style="skeu"][data-color="light"] .elev-4 {
+	background:
+		repeating-linear-gradient(
+			89deg,
+			transparent 0,           transparent 6px,
+			rgba(80,40,5,0.04)  6px, rgba(80,40,5,0.04)  7px,
+			transparent 7px,         transparent 18px,
+			rgba(80,40,5,0.025) 18px, rgba(80,40,5,0.025) 19px
+		),
+		linear-gradient(
+			145deg,
+			#e0b870, #c89848, #d8aa60, #be923a
+		) !important;
+	box-shadow:
+		-8px -8px 18px rgba(255,220,140,0.80),
+		 8px  8px 18px rgba(60,30,5,0.38),
+		 inset 0  1px 0 rgba(255,240,190,0.70),
+		 inset 0 -1px 0 rgba(60,30,5,0.20) !important;
+}
+
+/* Wood topbar — polished plank */
+html[data-style="skeu"][data-color="light"] .topbar {
+	background:
+		repeating-linear-gradient(
+			89.5deg,
+			transparent 0,          transparent 8px,
+			rgba(60,30,5,0.04) 8px, rgba(60,30,5,0.04) 9px,
+			transparent 9px,        transparent 24px
+		),
+		linear-gradient(180deg, #deb870 0%, #c49040 35%, #d4a850 65%, #bc8830 100%) !important;
+	border-radius: 14px !important;
+	box-shadow:
+		-8px -8px 20px rgba(255,210,120,0.75),
+		 8px  8px 20px rgba(50,25,3,0.38),
+		 inset 0  1px 0 rgba(255,240,190,0.60),
+		 0 0 40px rgba(0,0,0,0.20) !important;
+}
+
+/* Wood sidebar */
+html[data-style="skeu"][data-color="light"] .sidebar {
+	background:
+		repeating-linear-gradient(
+			89deg,
+			transparent 0,          transparent 10px,
+			rgba(60,30,5,0.03) 10px, rgba(60,30,5,0.03) 11px
+		),
+		linear-gradient(160deg, #d8a860, #c0903a) !important;
+}
+
+/* Wood tile cards */
+html[data-style="skeu"][data-color="light"] .tile {
+	background:
+		repeating-linear-gradient(
+			88deg,
+			transparent 0,          transparent 5px,
+			rgba(60,30,5,0.03) 5px, rgba(60,30,5,0.03) 6px,
+			transparent 6px,        transparent 16px
+		),
+		linear-gradient(145deg, #e2b870, #c6953c) !important;
+}
+
+/* Wood card (coming-soon) */
+html[data-style="skeu"][data-color="light"] .card {
+	background:
+		repeating-linear-gradient(
+			89deg,
+			transparent 0,           transparent 8px,
+			rgba(60,30,5,0.03) 8px,  rgba(60,30,5,0.03) 9px
+		),
+		linear-gradient(160deg, #e0b872, #caa050) !important;
+}
+
+/* Clerk in wood mode */
+html[data-style="skeu"][data-color="light"] .cl-card,
+html[data-style="skeu"][data-color="light"] .cl-cardBox {
+	background:
+		linear-gradient(160deg, #e2b870, #caa050) !important;
+}
+
+/* ── BRUTALISM DARK — electric yellow on void black ─────────── */
+
+html[data-style="brutal"][data-color="dark"] {
+	--bg-base:            #060606;
+	--bg-surface:         #0e0e0e;
+	--accent-primary:     #e8ff00;
+	--accent-primary-rgb: 232,255,0;
+	--shadow-light:       rgba(232,255,0,0.05);
+	--shadow-dark:        rgba(0,0,0,0.95);
+	--text-primary:       #d0d0d0;
+	--text-muted:         #555555;
+	--text-accent:        #ffffff;
+	--border-subtle:      #e8ff00;
+	--topbar-bg:          rgba(6,6,6,0.99);
+	--orb-1:              #e8ff00;
+	--orb-2:              #aacc00;
+	--orb-3:              #333300;
+	--orb-opacity:        0.07;
+}
+
+/* ── BRUTALISM LIGHT — black & stark red ───────────────────── */
+
+html[data-style="brutal"][data-color="light"] {
+	--bg-base:            #f2f2f2;
+	--bg-surface:         #ffffff;
+	--accent-primary:     #e00000;
+	--accent-primary-rgb: 224,0,0;
+	--shadow-light:       rgba(255,255,255,0.85);
+	--shadow-dark:        rgba(0,0,0,0.80);
+	--text-primary:       #111111;
+	--text-muted:         #555555;
+	--text-accent:        #000000;
+	--border-subtle:      #e00000;
+	--topbar-bg:          rgba(242,242,242,0.99);
+	--orb-1:              #e00000;
+	--orb-2:              #222222;
+	--orb-3:              #999999;
+	--orb-opacity:        0.06;
+}
+
+/* ── MAXIMALISM DARK — vivid electric violet ────────────────── */
+
+html[data-style="maximal"][data-color="dark"] {
+	--bg-base:            #0c0816;
+	--bg-surface:         #160c28;
+	--accent-primary:     #bf00ff;
+	--accent-primary-rgb: 191,0,255;
+	--shadow-light:       rgba(160,80,255,0.10);
+	--shadow-dark:        rgba(0,0,0,0.70);
+	--text-primary:       #c4a8e8;
+	--text-muted:         #6a4a8a;
+	--text-accent:        #eedcff;
+	--border-subtle:      rgba(191,0,255,0.15);
+	--topbar-bg:          rgba(12,8,22,0.97);
+	--orb-1:              #bf00ff;
+	--orb-2:              #ff2080;
+	--orb-3:              #4000a0;
+	--orb-opacity:        0.16;
+}
+
+/* Maximalism dark: tiles glow more intensely */
+html[data-style="maximal"][data-color="dark"] .tile-glow {
+	opacity: 0.85 !important;
+}
+html[data-style="maximal"][data-color="dark"] .topbar {
+	background:
+		linear-gradient(
+			135deg,
+			rgba(12,8,22,0.97),
+			color-mix(in srgb, rgba(12,8,22,0.97) 80%, rgba(191,0,255,1) 20%)
+		) !important;
+	box-shadow:
+		-8px  -8px 20px var(--shadow-light),
+		 8px   8px 20px var(--shadow-dark),
+		 0 0 0 1px rgba(191,0,255,0.25),
+		 0 0 60px rgba(191,0,255,0.10),
+		 0 0 60px rgba(0,0,0,0.40) !important;
+}
+
+/* ── MAXIMALISM LIGHT — vivid coral sunrise ─────────────────── */
+
+html[data-style="maximal"][data-color="light"] {
+	--bg-base:            #fff4f0;
+	--bg-surface:         #ffffff;
+	--accent-primary:     #e8005a;
+	--accent-primary-rgb: 232,0,90;
+	--shadow-light:       rgba(255,200,180,0.82);
+	--shadow-dark:        rgba(90,0,35,0.18);
+	--text-primary:       #4a0020;
+	--text-muted:         #a05070;
+	--text-accent:        #1a0010;
+	--border-subtle:      rgba(232,0,90,0.14);
+	--topbar-bg:          rgba(255,244,240,0.97);
+	--orb-1:              #e8005a;
+	--orb-2:              #ff6a00;
+	--orb-3:              #ffa080;
+	--orb-opacity:        0.15;
+}
