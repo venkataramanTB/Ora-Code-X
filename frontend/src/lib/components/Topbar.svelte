@@ -1,5 +1,6 @@
 <script>
 	import { spring } from 'svelte/motion';
+	import { Show, UserButton } from 'svelte-clerk';
 	import { scrolled } from '$lib/stores/theme.js';
 	import { sidebarOpen } from '$lib/stores/navigation.js';
 	import { NAV_ITEMS, TAGLINE } from '$lib/data/nav.js';
@@ -9,7 +10,6 @@
 
 	const MenuIcon   = ICON_MAP['Menu'];
 	const SearchIcon = ICON_MAP['Search'];
-	const UserIcon   = ICON_MAP['User'];
 
 	const topbarH  = spring(68, snappy);
 	const taglineH = spring(32, snappy);
@@ -74,9 +74,15 @@
 			<button class="icon-btn search-btn" aria-label="Search" use:magnetic>
 				<SearchIcon size={16} />
 			</button>
-			<button class="icon-btn user-btn" aria-label="User account" use:magnetic>
-				<span class="user-initials">VT</span>
-			</button>
+
+			<Show when="signed-in">
+				<div class="clerk-user-btn">
+					<UserButton afterSignOutUrl="/sign-in" />
+				</div>
+			</Show>
+			<Show when="signed-out">
+				<a href="/sign-in" class="sign-in-pill">Sign In</a>
+			</Show>
 		</div>
 	</div>
 
@@ -306,26 +312,44 @@
 		min-width: 36px;
 	}
 
-	.user-btn {
-		width: 34px; height: 34px;
-		padding: 0;
+	/* Clerk UserButton wrapper — align it with our topbar height */
+	.clerk-user-btn {
+		display: flex;
+		align-items: center;
+	}
+
+	/* Style the Clerk avatar button to match our dark theme */
+	.clerk-user-btn :global(.cl-userButtonTrigger) {
+		width: 34px;
+		height: 34px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, rgba(0,212,255,0.18) 0%, rgba(0,212,255,0.06) 100%);
 		border: 1px solid rgba(0, 212, 255, 0.3);
 		box-shadow: 0 0 12px rgba(0, 212, 255, 0.12);
-		overflow: hidden;
+		transition: box-shadow 0.15s;
+	}
+	.clerk-user-btn :global(.cl-userButtonTrigger:hover) {
+		box-shadow: 0 0 20px rgba(0, 212, 255, 0.25);
+		border-color: rgba(0, 212, 255, 0.5);
 	}
 
-	.user-btn:hover {
-		background: linear-gradient(135deg, rgba(0,212,255,0.28) 0%, rgba(0,212,255,0.12) 100%);
-		box-shadow: 0 0 18px rgba(0, 212, 255, 0.22);
+	.sign-in-pill {
+		display: flex;
+		align-items: center;
+		padding: 6px 16px;
+		border-radius: 12px;
+		border: 1px solid rgba(0, 212, 255, 0.28);
+		background: rgba(0, 212, 255, 0.07);
+		color: var(--accent-cyan);
+		text-decoration: none;
+		font-size: 12.5px;
+		font-weight: 600;
+		letter-spacing: 0.03em;
+		transition: background 0.15s, box-shadow 0.15s, border-color 0.15s;
 	}
-
-	.user-initials {
-		font-size: 11px;
-		font-weight: 700;
-		color: #00d4ff;
-		letter-spacing: 0.05em;
+	.sign-in-pill:hover {
+		background: rgba(0, 212, 255, 0.14);
+		border-color: rgba(0, 212, 255, 0.45);
+		box-shadow: 0 0 14px rgba(0, 212, 255, 0.15);
 	}
 
 	.hamburger {
