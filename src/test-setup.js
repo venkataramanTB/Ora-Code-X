@@ -22,3 +22,12 @@ Object.defineProperty(window, 'ResizeObserver', {
 		disconnect() {}
 	}
 });
+
+// Svelte fly/fade transitions use Web Animations API which jsdom lacks
+Element.prototype.animate = () => ({
+	finished: Promise.resolve(),
+	cancel() {},
+	pause() {},
+	play() {},
+	set onfinish(fn) { if (typeof fn === 'function') fn(); }
+});
