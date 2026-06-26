@@ -1,0 +1,140 @@
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/700.css';
+
+*, *::before, *::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+:root {
+	/* Neomorphic foundation — ALL surfaces must use --bg-base as background */
+	--bg-base: #13171f;
+	--shadow-light: rgba(255, 255, 255, 0.045);
+	--shadow-dark:  rgba(0, 0, 0, 0.55);
+
+	/* Accent colors */
+	--accent-cyan:   #00d4ff;
+	--accent-gold:   #f5a623;
+	--accent-pink:   #ff4d6d;
+	--accent-green:  #00e676;
+	--accent-sky:    #4fc3f7;
+	--accent-purple: #b39ddb;
+	--accent-orange: #ff9800;
+
+	/* Text */
+	--text-primary: #c8d0e0;
+	--text-muted:   #6b7a99;
+	--text-accent:  #e8edf5;
+}
+
+html, body {
+	height: 100%;
+	background-color: var(--bg-base);
+	color: var(--text-primary);
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	font-size: 14px;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	overflow-x: hidden;
+}
+
+/* ── Neomorphic surface states ───────────────────────────── */
+
+.neo-convex {
+	background: var(--bg-base);
+	box-shadow:
+		-8px -8px 16px var(--shadow-light),
+		 8px  8px 16px var(--shadow-dark);
+}
+
+.neo-concave {
+	background: var(--bg-base);
+	box-shadow:
+		inset -4px -4px 8px var(--shadow-light),
+		inset  4px  4px 8px var(--shadow-dark);
+}
+
+.neo-flat {
+	background: var(--bg-base);
+	box-shadow:
+		-4px -4px 8px var(--shadow-light),
+		 4px  4px 8px var(--shadow-dark);
+}
+
+/* ── Elevation scale ─────────────────────────────────────── */
+
+.elev-1 {
+	box-shadow:
+		-4px  -4px  8px var(--shadow-light),
+		 4px   4px  8px var(--shadow-dark);
+}
+.elev-2 {
+	box-shadow:
+		-8px  -8px 16px var(--shadow-light),
+		 8px   8px 16px var(--shadow-dark);
+}
+.elev-3 {
+	box-shadow:
+		-12px -12px 24px var(--shadow-light),
+		 12px  12px 24px var(--shadow-dark);
+}
+.elev-4 {
+	box-shadow:
+		-16px -16px 32px var(--shadow-light),
+		 16px  16px 32px var(--shadow-dark);
+}
+
+/* ── Dynamic shadow tilt ─────────────────────────────────── */
+/* use:tilt sets --tilt-x and --tilt-y as unitless degree numbers */
+
+.neo-tiltable {
+	box-shadow:
+		calc(-8px  + var(--tilt-y, 0) * 1.2px) calc(-8px  + var(--tilt-x, 0) * 1.2px) 20px var(--shadow-light),
+		calc( 8px  + var(--tilt-y, 0) * 1.2px) calc( 8px  + var(--tilt-x, 0) * 1.2px) 20px var(--shadow-dark);
+}
+
+/* ── X character accent ──────────────────────────────────── */
+
+.x-char {
+	color: var(--accent-cyan);
+	text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+/* ── Marquee animation ───────────────────────────────────── */
+
+@keyframes marquee {
+	0%   { transform: translateX(0); }
+	100% { transform: translateX(-50%); }
+}
+
+/* ── Orb drift animations ────────────────────────────────── */
+
+@keyframes drift1 {
+	0%, 100% { transform: translate(0,     0);    }
+	25%       { transform: translate(-30px,  20px); }
+	50%       { transform: translate( 20px, -30px); }
+	75%       { transform: translate(-10px,  40px); }
+}
+
+@keyframes drift2 {
+	0%, 100% { transform: translate(0,     0);    }
+	33%       { transform: translate( 40px, -25px); }
+	66%       { transform: translate(-20px,  35px); }
+}
+
+@keyframes drift3 {
+	0%, 100% { transform: translate(0,    0);   }
+	50%       { transform: translate(25px, 25px); }
+}
+
+/* ── Reduced motion ──────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
