@@ -138,3 +138,119 @@ html, body {
 		transition-duration: 0.01ms !important;
 	}
 }
+
+/* ── Clerk component overrides ───────────────────────────── */
+/* Target .cl-* class names directly — inline variables alone
+   don't win against Clerk's internal stylesheet for inputs.  */
+
+.cl-card, .cl-cardBox {
+	background: linear-gradient(160deg, #161c28 0%, #111620 100%) !important;
+	box-shadow:
+		-12px -12px 28px rgba(255,255,255,0.04),
+		 12px  12px 28px rgba(0,0,0,0.6),
+		 0 0 0 1px rgba(255,255,255,0.06) !important;
+	border-radius: 20px !important;
+}
+
+/* Header */
+.cl-headerTitle {
+	color: #e8edf5 !important;
+	font-size: 20px !important;
+	font-weight: 700 !important;
+	letter-spacing: -0.015em !important;
+}
+.cl-headerSubtitle {
+	color: #6b7a99 !important;
+	font-size: 13.5px !important;
+}
+
+/* Inputs — this is the main fix for the white background */
+.cl-formFieldInput {
+	background: #0d1117 !important;
+	border: 1px solid rgba(255, 255, 255, 0.09) !important;
+	border-radius: 10px !important;
+	color: #e8edf5 !important;
+	font-size: 14px !important;
+	transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+.cl-formFieldInput:focus {
+	border-color: rgba(0, 212, 255, 0.45) !important;
+	box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1) !important;
+	outline: none !important;
+}
+.cl-formFieldInput::placeholder {
+	color: #3d4a63 !important;
+}
+
+/* Field labels */
+.cl-formFieldLabel {
+	color: #8a9ab8 !important;
+	font-size: 12.5px !important;
+	font-weight: 500 !important;
+	letter-spacing: 0.03em !important;
+}
+
+/* Primary button */
+.cl-formButtonPrimary {
+	background: linear-gradient(135deg, rgba(0,212,255,0.18), rgba(0,212,255,0.32)) !important;
+	border: 1px solid rgba(0, 212, 255, 0.4) !important;
+	border-radius: 11px !important;
+	color: #00d4ff !important;
+	font-size: 14px !important;
+	font-weight: 600 !important;
+	letter-spacing: 0.03em !important;
+	box-shadow: 0 0 18px rgba(0, 212, 255, 0.12) !important;
+	transition: box-shadow 0.15s, background 0.15s !important;
+}
+.cl-formButtonPrimary:hover {
+	background: linear-gradient(135deg, rgba(0,212,255,0.26), rgba(0,212,255,0.42)) !important;
+	box-shadow: 0 0 28px rgba(0, 212, 255, 0.22) !important;
+}
+
+/* Social / OAuth buttons */
+.cl-socialButtonsBlockButton {
+	background: rgba(255, 255, 255, 0.04) !important;
+	border: 1px solid rgba(255, 255, 255, 0.09) !important;
+	border-radius: 10px !important;
+	color: #c8d0e0 !important;
+}
+.cl-socialButtonsBlockButton:hover {
+	background: rgba(255, 255, 255, 0.07) !important;
+	border-color: rgba(255, 255, 255, 0.15) !important;
+}
+.cl-socialButtonsBlockButtonText {
+	color: #c8d0e0 !important;
+}
+
+/* Divider */
+.cl-dividerLine {
+	background: rgba(255, 255, 255, 0.07) !important;
+}
+.cl-dividerText {
+	color: #3d4a63 !important;
+	font-size: 12px !important;
+}
+
+/* Footer links */
+.cl-footerActionText { color: #6b7a99 !important; }
+.cl-footerActionLink {
+	color: #00d4ff !important;
+	font-weight: 600 !important;
+}
+.cl-footerActionLink:hover { color: #4dd9ff !important; }
+
+/* Internal nav links (back buttons, etc.) */
+.cl-backLink, .cl-identityPreviewText { color: #8a9ab8 !important; }
+.cl-backLink:hover { color: #00d4ff !important; }
+
+/* Error messages */
+.cl-formFieldErrorText, .cl-alert[data-variant="danger"] {
+	color: #ff4d6d !important;
+}
+
+/* "Development mode" badge */
+.cl-internal-b3fm6y {
+	background: rgba(255, 152, 0, 0.08) !important;
+	border-color: rgba(255, 152, 0, 0.2) !important;
+	color: #ff9800 !important;
+}

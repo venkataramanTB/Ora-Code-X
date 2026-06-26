@@ -20,32 +20,20 @@
 
 	const clerkAppearance = {
 		variables: {
-			colorBackground:        '#13171f',
-			colorInputBackground:   '#161b25',
+			colorBackground:        '#111620',
+			colorInputBackground:   '#0d1117',
+			colorInputText:         '#e8edf5',
 			colorPrimary:           '#00d4ff',
 			colorPrimaryForeground: '#0a0e14',
-			colorText:              '#c8d0e0',
+			colorText:              '#e8edf5',
 			colorTextSecondary:     '#6b7a99',
-			colorNeutral:           '#6b7a99',
-			borderRadius:           '14px',
+			colorNeutral:           '#4a5568',
+			colorDanger:            '#ff4d6d',
+			borderRadius:           '12px',
 			fontFamily:             '"Inter", -apple-system, sans-serif',
 			fontSize:               '14px',
+			spacingUnit:            '16px',
 		},
-		elements: {
-			card: {
-				background: 'linear-gradient(135deg,rgba(22,28,38,0.98) 0%,rgba(18,22,30,1) 100%)',
-				boxShadow:  '-12px -12px 24px rgba(255,255,255,0.045),12px 12px 24px rgba(0,0,0,0.55)',
-				border:     '1px solid rgba(255,255,255,0.06)',
-			},
-			formButtonPrimary: {
-				background:  'linear-gradient(135deg,rgba(0,212,255,0.18),rgba(0,212,255,0.32))',
-				border:      '1px solid rgba(0,212,255,0.4)',
-				color:       '#00d4ff',
-				boxShadow:   '0 0 18px rgba(0,212,255,0.15)',
-			},
-			footerActionLink:    { color: '#00d4ff' },
-			identityPreviewText: { color: '#c8d0e0' },
-		}
 	};
 
 	onMount(() => {
