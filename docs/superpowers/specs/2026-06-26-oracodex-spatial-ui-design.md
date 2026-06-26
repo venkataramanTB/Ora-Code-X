@@ -162,35 +162,102 @@ This means as the card tilts right, the light shadow shifts right and the dark s
 
 ---
 
-## 5. Dashboard Grid (Spatial Neomorphic Launchpad)
+## 5. Dashboard — Neomorphic Bento Grid Launchpad
 
-### Layout
-- 6 tiles in a 3×2 grid (`grid-template-columns: repeat(3, 1fr)`)
-- Gap: 28px (slightly wider for neo shadow breathing room)
-- Responsive: 2×3 on tablet, 1×6 on mobile
+### Bento Layout
+
+The dashboard uses CSS `grid-template-areas` for a mosaic layout. Six nav sections map to tiles of varied sizes — one hero, two medium, three small — creating visual hierarchy through scale.
+
+```
+Desktop (≥1024px):
+┌─────────────────────────┬──────────┬──────────┐
+│                         │          │          │
+│       DeliveryX         │ My Tools │WorkSpace │
+│       (hero, 2×2)       │  (1×1)   │  (1×1)   │
+│                         │          │          │
+│                         ├──────────┴──────────┤
+│                         │                     │
+│                         │    Monitoring       │
+│                         │     (2×1 wide)      │
+├────────────┬────────────┴─────────────────────┤
+│            │                                  │
+│ Dashboard  │       Administration             │
+│   (1×1)    │         (2×1 wide)               │
+│            │                                  │
+└────────────┴──────────────────────────────────┘
+```
+
+```css
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, minmax(160px, auto));
+  gap: 20px;
+  grid-template-areas:
+    "delivery  delivery  mytools   workspace"
+    "delivery  delivery  monitor   monitor"
+    "dashboard admin     admin     admin";
+}
+```
+
+**Tablet (768px–1023px):** 2-column grid, DeliveryX hero becomes 2×1, others stack as 1×1.
+
+**Mobile (<768px):** Single column, all tiles full-width, stacked vertically.
+
+### Tile Size Vocabulary
+| Tile | Grid area | Visual weight |
+|---|---|---|
+| DeliveryX | 2×2 (hero) | `elev-4`, `border-radius: 24px` |
+| Monitoring | 2×1 wide | `elev-3`, `border-radius: 20px` |
+| Administration | 3×1 wide | `elev-3`, `border-radius: 20px` |
+| My Tools | 1×1 | `elev-2`, `border-radius: 16px` |
+| Work Space | 1×1 | `elev-2`, `border-radius: 16px` |
+| Dashboard | 1×1 | `elev-2`, `border-radius: 16px` |
 
 ### Tile Anatomy
+
+**Hero tile (DeliveryX, 2×2):**
 ```
-┌──────────────────────────────┐  ← neo-convex, elev-2
-│                              │
-│       [icon 56px]            │  ← colored per section accent
-│    [soft accent glow]        │  ← radial gradient, 40% opacity
-│                              │
-│     SECTION NAME             │  ← uppercase, text-muted, tracking
-│                              │
-└──────────────────────────────┘
+┌─────────────────────────────────────┐
+│  [icon 72px]                        │
+│  [accent glow 80px radius]          │
+│                                     │
+│  DELIVERYX                          │  ← large label, text-accent
+│  The Intelligent Cloud Delivery     │  ← subtitle, text-muted, 12px
+│                                     │
+│  [sub-item chips — always visible]  │  ← inline expanded by default
+└─────────────────────────────────────┘
 ```
-- All surfaces: `--bg-base` + `neo-convex elev-2`
-- Icon: 56px, colored per section accent, `filter: drop-shadow(0 0 8px <accent>)`
-- Soft glow: radial gradient centered on icon, `var(--accent-glow-<color>)`, 60px radius
-- `border-radius: 20px`
-- No border — borders break the neomorphic illusion (depth comes from shadow only)
+
+**Wide tile (Monitoring, Administration):**
+```
+┌──────────────────────────────────────────┐
+│  [icon 52px]  MONITORING                 │  ← icon + label side by side
+│               [sub-item chips on expand] │
+└──────────────────────────────────────────┘
+```
+
+**Small tile (My Tools, Work Space, Dashboard):**
+```
+┌───────────────┐
+│  [icon 48px]  │
+│  [glow]       │
+│  MY TOOLS     │
+└───────────────┘
+```
+
+### Tile Common Specs
+- All surfaces: `--bg-base` + `neo-convex` at their elevation level
+- Icon: colored per section accent, `filter: drop-shadow(0 0 8px <accent>)`
+- Glow halo: radial gradient, `var(--accent-glow-<color>)`, radius scales with tile size
+- No borders — depth from shadow only
+- Sub-items: `neo-concave elev-1` pill chips
 
 ### Tile Interactions
-- **Hover:** `use:tilt` activates (±8° rotateX/Y, dynamic shadow tilt), elevation rises to `elev-4`, icon scales 1.0 → 1.08 (snappy spring), glow expands
-- **Click:** Brief concave press animation (elev-2 → neo-concave → elev-3) with 120ms spring, then expands
-- **Expanded:** Tile grows, sub-items appear as neomorphic concave pill chips below the icon, each staggering in at 30ms intervals
-- **Active:** Thin 1px accent-colored inset ring via `outline: 1px solid <accent>` + `elev-3`
+- **Hover:** `use:tilt` (±6° hero, ±8° small tiles), dynamic shadow tilt, elevation +1, icon scales (snappy spring), glow expands
+- **Click (small/wide tiles):** Brief concave press → expand sub-items as pill chips with 30ms stagger
+- **Hero tile (DeliveryX):** Sub-items always visible, clicking a chip navigates directly
+- **Active tile:** `outline: 1px solid <accent>` inset ring + one elevation higher
 
 ---
 
@@ -284,14 +351,16 @@ src/
 - Sub-items: `neo-concave elev-1` pill chips
 
 **`DashboardGrid.svelte`**
-- 3×2 CSS grid, gap 28px
-- Renders 6 `DashboardTile` components, passes nav data
+- CSS `grid-template-areas` bento layout (4 columns × 3 rows desktop, 2-col tablet, 1-col mobile)
+- gap: 20px
+- Renders 6 `DashboardTile` components with `size` prop (`hero` | `wide` | `small`)
 
 **`DashboardTile.svelte`**
-- Props: `icon`, `label`, `accent`, `subItems[]`
-- `use:tilt` on root — drives `--tilt-x`/`--tilt-y` + dynamic neo shadows
-- `expanded` state ($state rune) drives sub-item chip reveal with stagger
-- Press animation: brief `neo-concave` class swap on click
+- Props: `icon`, `label`, `accent`, `subItems[]`, `size` (`hero` | `wide` | `small`), `gridArea`
+- `size` drives icon px, glow radius, border-radius, elevation, and whether sub-items are always-visible (hero) or click-to-expand (wide/small)
+- `use:tilt` — tilt angle ±6° hero, ±8° wide/small; updates `--tilt-x`/`--tilt-y` for dynamic neo shadow
+- `expanded` $state rune drives sub-item chip reveal with 30ms stagger
+- Press animation: brief `neo-concave` class swap on click (wide/small only)
 
 **`OrbBackground.svelte`**
 - Fixed full-viewport `z-index: 0`, pointer-events none
