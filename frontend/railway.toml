@@ -1,8 +1,9 @@
 [build]
-builder = "nixpacks"
+builder = "railpack"
 buildCommand = "npm ci && npm run build"
 
 [deploy]
 startCommand = "node build"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
+
