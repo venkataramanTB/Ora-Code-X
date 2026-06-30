@@ -36,7 +36,7 @@
 </script>
 
 <svelte:head>
-	<title>OraCodeX Studio</title>
+	<title>OraCodeX Nexus</title>
 	<meta name="description" content="The Intelligent Oracle Cloud Delivery Platform" />
 </svelte:head>
 
@@ -49,12 +49,12 @@
 		<h1 class="hero-title">
 			OraCode<span class="x-char hero-x">X</span>
 			<br />
-			<span class="hero-studio">Studio</span>
+			<span class="hero-Nexus">Nexus</span>
 		</h1>
 
-		<p class="hero-sub">
+		<h2 class="hero-sub">
 			The Intelligent Oracle Cloud Delivery Platform
-		</p>
+		</h2>
 
 		<button class="cta" onclick={openMenu}>
 			<span class="cta-menu-icon"><MenuIcon size={15} /></span>
@@ -164,7 +164,7 @@
 		margin: 0;
 	}
 
-	.hero-studio {
+	.hero-Nexus {
 		font-size: clamp(36px, 6vw, 68px);
 		font-weight: 300;
 		color: var(--text-muted);

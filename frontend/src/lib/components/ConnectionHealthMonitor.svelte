@@ -2,10 +2,12 @@
 	import { useClerkContext } from 'svelte-clerk';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { apiFetch } from '$lib/api.js';
 
 	const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 
-	const { session } = useClerkContext();
+	const { session, clerk } = useClerkContext();
+	const auth = { session, signOut: () => clerk?.signOut() ?? Promise.resolve() };
 
 	/**
 	 * @typedef {{ id: string, connection_name: string, instance_url: string, message: string }} FailingConn
@@ -26,18 +28,17 @@
 
 	async function runCheck() {
 		if (checking || checked || isAuthRoute) return;
-		const token = await session?.getToken();
-		if (!token) return;
+		if (!session) return;
 
 		checked = true;
 		checking = true;
 
 		try {
-			const res = await fetch(`${API}/api/connections/test-all`, {
-				method: 'POST',
-				headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-				signal: AbortSignal.timeout(60_000),
-			});
+			const res = await apiFetch(
+				`${API}/api/connections/test-all`,
+				{ method: 'POST', signal: AbortSignal.timeout(60_000) },
+				auth,
+			);
 			if (!res.ok) return;
 			const results = await res.json();
 			const failing = results.filter(/** @param {any} r */ r => !r.success);

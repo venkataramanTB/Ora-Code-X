@@ -1,8 +1,8 @@
-# OraCodeX Studio — Neomorphic Spatial UI Implementation Plan
+# OraCodeX Nexus — Neomorphic Spatial UI Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the OraCodeX Studio UI shell in SvelteKit — a neomorphic spatial dark-mode layout with a scroll-aware floating topbar, hamburger-triggered sidebar, physics-based spring animations, 3D tilt with dynamic shadow shifting, and a bento grid dashboard launchpad.
+**Goal:** Build the OraCodeX Nexus UI shell in SvelteKit — a neomorphic spatial dark-mode layout with a scroll-aware floating topbar, hamburger-triggered sidebar, physics-based spring animations, 3D tilt with dynamic shadow shifting, and a bento grid dashboard launchpad.
 
 **Architecture:** SvelteKit static site with Svelte 5 runes. Global state lives in three writable stores (`navigation`, `theme/scroll`, `mouse`). Three Svelte actions (`tilt`, `parallax`, `magnetic`) share the mouse store for coordinated spatial effects. Components compose from a `NeoPanel` base with elevation-scaled neomorphic shadows.
 
@@ -554,13 +554,13 @@ export const NAV_ITEMS = [
 
 export const TAGLINE = {
   prefix: 'Welcome to ',
-  brand: 'OraCodeX Studio',
+  brand: 'OraCodeX Nexus',
   separator: ' — The Intelligent Oracle Cloud Delivery Platform | ',
   keywords: [
     { word: 'Extract',   color: '#ff4d6d' },
     { word: 'Convert',   color: '#00d4ff' },
     { word: 'Integrate', color: '#00e676' },
-    { word: 'Operate',   color: '#ff9800' },
+    { word: 'Actions',   color: '#ff9800' },
     { word: 'Validate',  color: '#b39ddb' },
     { word: 'Deliver',   color: '#4fc3f7' }
   ]
@@ -2180,7 +2180,7 @@ git commit -m "feat: add DashboardGrid bento layout with responsive grid-templat
 </script>
 
 <svelte:head>
-  <title>OraCodeX Studio</title>
+  <title>OraCodeX Nexus</title>
 </svelte:head>
 
 <DashboardGrid />

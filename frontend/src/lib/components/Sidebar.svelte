@@ -53,7 +53,7 @@
 				<span class="brand-mark" style="color:{activeSection?.accent ?? 'var(--accent-primary)'}">O</span>
 				<div class="brand-text">
 					<span class="brand-name">OraCode<span class="x-char">X</span></span>
-					<span class="brand-sub">Studio</span>
+					<span class="brand-sub">Nexus</span>
 				</div>
 			</div>
 			<button class="close-btn" onclick={() => sidebarOpen.set(false)} aria-label="Close navigation">
@@ -80,7 +80,7 @@
 
 		<!-- Footer -->
 		<div class="sidebar-footer">
-			<span class="footer-label">OraCodeX Studio</span>
+			<span class="footer-label">OraCodeX Nexus</span>
 			<span class="footer-version">v1.0</span>
 		</div>
 	</nav>

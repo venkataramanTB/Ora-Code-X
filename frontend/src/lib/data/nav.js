@@ -230,13 +230,13 @@ export function findNodeByPath(pathname) {
 
 export const TAGLINE = {
 	prefix:    'Welcome to ',
-	brand:     'OraCodeX Studio',
+	brand:     'OraCodeX Nexus',
 	separator: ' — The Intelligent Oracle Cloud Delivery Platform | ',
 	keywords: [
 		{ word: 'Extract',   color: '#ff4d6d' },
 		{ word: 'Convert',   color: '#00d4ff' },
 		{ word: 'Integrate', color: '#00e676' },
-		{ word: 'Operate',   color: '#ff9800' },
+		{ word: 'Actions',   color: '#ff9800' },
 		{ word: 'Validate',  color: '#b39ddb' },
 		{ word: 'Deliver',   color: '#4fc3f7' },
 	],

@@ -57,7 +57,7 @@
 				<span class="logo-mark" aria-hidden="true">O</span>
 				<span class="logo-text">
 					<span class="logo-name">OraCode<span class="x-char">X</span></span>
-					<span class="logo-sub">Studio</span>
+					<span class="logo-sub">Nexus</span>
 				</span>
 			</a>
 		</div>

@@ -44,7 +44,7 @@
 </script>
 
 <svelte:head>
-	<title>{displayTitle} · OraCodeX Studio</title>
+	<title>{displayTitle} · OraCodeX Nexus</title>
 </svelte:head>
 
 <div class="page-shell">

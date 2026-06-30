@@ -1,4 +1,4 @@
-# OraCodeX Studio — Neomorphic Spatial UI Redesign
+# OraCodeX Nexus — Neomorphic Spatial UI Redesign
 **Date:** 2026-06-26  
 **Stack:** SvelteKit (Svelte 5)  
 **Status:** Approved
@@ -7,7 +7,7 @@
 
 ## 1. Overview
 
-Redesign OraCodeX Studio's layout from a classic left-sidebar pattern into a full spatial UI with physics-based motion. Navigation moves from a vertical sidebar into a horizontal topbar. On scroll, a hamburger icon appears and clicking it slides in a sidebar panel. The dashboard becomes a spatial launchpad with large 3D-tiltable tiles.
+Redesign OraCodeX Nexus's layout from a classic left-sidebar pattern into a full spatial UI with physics-based motion. Navigation moves from a vertical sidebar into a horizontal topbar. On scroll, a hamburger icon appears and clicking it slides in a sidebar panel. The dashboard becomes a spatial launchpad with large 3D-tiltable tiles.
 
 Visual language: **Neomorphism + Spatial UI**. All surfaces are solid dark neomorphic material — extruded from the background using dual light/dark shadows. Depth is communicated through shadow intensity (elevation) and 3D perspective transforms, not transparency. The critical innovation is **dynamic shadow tilt**: as cards tilt in 3D space, their neomorphic shadows shift in real-time to simulate a fixed overhead light source, creating a convincing physical tactility.
 
@@ -28,7 +28,7 @@ Dark mode is the default and only mode.
 | Administration | (expandable) | `#b39ddb` purple |
 
 ### Tagline Keywords (colored)
-`Extract` #ff4d6d · `Convert` #00d4ff · `Integrate` #00e676 · `Operate` #ff9800 · `Validate` #b39ddb · `Deliver` #4fc3f7
+`Extract` #ff4d6d · `Convert` #00d4ff · `Integrate` #00e676 · `Actions` #ff9800 · `Validate` #b39ddb · `Deliver` #4fc3f7
 
 ---
 

@@ -3,13 +3,13 @@
 </script>
 
 <svelte:head>
-	<title>Sign Up — OraCodeX Studio</title>
+	<title>Sign Up — OraCodeX Nexus</title>
 </svelte:head>
 
 <div class="auth-page">
 	<div class="auth-brand">
 		<span class="brand-mark">O</span>
-		<span class="brand-name">OraCode<span class="x-char">X</span> <span class="brand-sub">Studio</span></span>
+		<span class="brand-name">OraCode<span class="x-char">X</span> <span class="brand-sub">Nexus</span></span>
 	</div>
 
 	<SignUp

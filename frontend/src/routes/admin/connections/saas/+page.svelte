@@ -3,15 +3,12 @@
 	import { useClerkContext } from 'svelte-clerk';
 	import { page } from '$app/stores';
 	import { ICON_MAP } from '$lib/data/icons.js';
+	import { apiFetch } from '$lib/api.js';
 
 	const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 
-	const { session } = useClerkContext();
-
-	async function authHeaders() {
-		const token = await session?.getToken();
-		return { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-	}
+	const { session, clerk } = useClerkContext();
+	const auth = { session, signOut: () => clerk?.signOut() ?? Promise.resolve() };
 
 	// ── Icons ──────────────────────────────────────────────────────────────────
 	const CloudIcon   = ICON_MAP['Cloud'];
@@ -84,7 +81,7 @@
 	async function loadConnections() {
 		loading = true; fetchError = '';
 		try {
-			const res = await fetch(`${API}/api/connections`, { headers: await authHeaders() });
+			const res = await apiFetch(`${API}/api/connections`, {}, auth);
 			if (!res.ok) throw new Error(`Server error ${res.status}`);
 			connections = await res.json();
 		} catch (err) {
@@ -108,7 +105,7 @@
 			const payload = { ...form };
 			if (editingId && !payload.password) delete payload.password;
 
-			const res  = await fetch(url, { method, headers: await authHeaders(), body: JSON.stringify(payload) });
+			const res  = await apiFetch(url, { method, body: JSON.stringify(payload) }, auth);
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.detail ?? data.error ?? `Server error ${res.status}`);
 
@@ -130,7 +127,7 @@
 		testingId = id;
 		dismissResult(id);
 		try {
-			const res  = await fetch(`${API}/api/connections/${id}/test`, { method: 'POST', headers: await authHeaders() });
+			const res  = await apiFetch(`${API}/api/connections/${id}/test`, { method: 'POST' }, auth);
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.detail ?? data.error ?? 'Test failed');
 			connections = connections.map(c => c.id === id ? data.connection : c);
@@ -149,7 +146,7 @@
 	/** @param {string} id */
 	async function deleteConnection(id) {
 		try {
-			const res  = await fetch(`${API}/api/connections/${id}`, { method: 'DELETE', headers: await authHeaders() });
+			const res  = await apiFetch(`${API}/api/connections/${id}`, { method: 'DELETE' }, auth);
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.detail ?? data.error ?? 'Delete failed');
 			connections = connections.filter(c => c.id !== id);
@@ -210,7 +207,7 @@
 </script>
 
 <svelte:window onkeydown={onKeydown} />
-<svelte:head><title>Oracle Cloud SaaS Connections — OraCodeX Studio</title></svelte:head>
+<svelte:head><title>Oracle Cloud SaaS Connections — OraCodeX Nexus</title></svelte:head>
 
 <!-- ── Toast ─────────────────────────────────────────────────────────────────── -->
 {#if toast}
