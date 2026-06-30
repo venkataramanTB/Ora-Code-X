@@ -1,0 +1,16 @@
+[phases.setup]
+nixPkgs = ["nodejs_20", "python312"]
+
+[phases.install]
+dependsOn = ["setup"]
+cmds = [
+  "(cd frontend && npm ci)",
+  "pip install -r backend/requirements.txt"
+]
+
+[phases.build]
+dependsOn = ["install"]
+cmds = ["(cd frontend && npm run build)"]
+
+[start]
+cmd = "bash scripts/start.sh"

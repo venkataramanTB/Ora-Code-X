@@ -1,0 +1,21 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "bash scripts/start.sh"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+# Required Railway environment variables:
+#
+#  Build-time (set BEFORE first deploy so Vite bakes them in):
+#    VITE_API_URL=              ← empty string → relative /api/* paths
+#    PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+#
+#  Runtime (FastAPI + SvelteKit):
+#    DATABASE_URL=postgresql://...
+#    CLERK_JWKS_URL=https://.../.well-known/jwks.json
+#    CLERK_ISSUER_URL=https://...
+#    ADMIN_USER_IDS=user_abc,user_def
+#    ENCRYPTION_KEY=<32-byte hex>
+#    ORIGIN=https://<your-app>.railway.app   ← SvelteKit CSRF protection
