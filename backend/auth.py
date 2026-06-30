@@ -4,16 +4,21 @@ Clerk JWT verification using python-jose + httpx.
 Intentionally avoids PyJWT's PyJWKClient — there is a conflicting system-level
 `jwt` package on this machine that shadows PyJWT. python-jose imports from the
 `jose` namespace so there is no conflict.
+
+Security properties:
+  - RS256 signature verified against Clerk's JWKS
+  - `iss` claim checked against CLERK_ISSUER_URL (required env var)
+  - `sub` must be present
+  - User must be in ADMIN_USER_IDS allowlist (comma-separated env var)
 """
 
 import os
 import time
-from typing import Optional
 
 import httpx
 from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTError
-from fastapi import Depends, HTTPException, Security, status
+from fastapi import HTTPException, Security, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 bearer_scheme = HTTPBearer()
@@ -21,6 +26,13 @@ bearer_scheme = HTTPBearer()
 # ── JWKS cache (refresh every 5 minutes) ─────────────────────────────────────
 _jwks_cache: dict[str, object] = {"keys": {}, "fetched_at": 0.0}
 _CACHE_TTL = 300  # seconds
+
+
+def _get_admin_ids() -> set[str]:
+    raw = os.environ.get("ADMIN_USER_IDS", "").strip()
+    if not raw:
+        return set()
+    return {uid.strip() for uid in raw.split(",") if uid.strip()}
 
 
 async def _get_jwk(kid: str) -> dict:
@@ -57,22 +69,36 @@ async def _get_jwk(kid: str) -> dict:
 async def require_admin(
     credentials: HTTPAuthorizationCredentials = Security(bearer_scheme),
 ) -> str:
-    """Verifies a Clerk Bearer JWT and returns the user_id (sub claim)."""
+    """Verifies a Clerk Bearer JWT, checks issuer and admin allowlist, returns user_id."""
     token = credentials.credentials
     try:
         header = jwt.get_unverified_header(token)
         kid = header.get("kid", "")
         jwk = await _get_jwk(kid)
 
+        expected_issuer = os.environ.get("CLERK_ISSUER_URL", "").strip()
+        if not expected_issuer:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Server misconfiguration: CLERK_ISSUER_URL not set",
+            )
+
         payload = jwt.decode(
             token,
             jwk,
             algorithms=["RS256"],
+            issuer=expected_issuer,
             options={"verify_aud": False},  # Clerk JWTs carry no standard audience
         )
+
         user_id: str = payload.get("sub", "")
         if not user_id:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token: missing subject")
+
+        admin_ids = _get_admin_ids()
+        if admin_ids and user_id not in admin_ids:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: admin privileges required")
+
         return user_id
 
     except ExpiredSignatureError:

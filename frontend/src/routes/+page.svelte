@@ -20,8 +20,18 @@
 		}
 	}
 
-	function formatLabel(text) {
-		return text.replace(/X(?=[a-z]|ion|ing|$)/g, '<span class="x-char">X</span>');
+	/** @param {string} text @returns {{ t: 'text'|'x', v?: string }[]} */
+	function splitLabel(text) {
+		const segments = [];
+		const re = /X(?=[a-z]|ion|ing|$)/g;
+		let last = 0, match;
+		while ((match = re.exec(text)) !== null) {
+			if (match.index > last) segments.push({ t: 'text', v: text.slice(last, match.index) });
+			segments.push({ t: 'x' });
+			last = match.index + 1;
+		}
+		if (last < text.length) segments.push({ t: 'text', v: text.slice(last) });
+		return segments;
 	}
 </script>
 
@@ -75,7 +85,7 @@
 					</span>
 				{/if}
 
-				<span class="fc-label">{@html formatLabel(item.label)}</span>
+				<span class="fc-label">{#each splitLabel(item.label) as seg}{#if seg.t === 'x'}<span class="x-char">X</span>{:else}{seg.v}{/if}{/each}</span>
 
 				{#if item.children?.length}
 					<span class="fc-badge" style="color:{item.accent};border-color:{item.accent}33">

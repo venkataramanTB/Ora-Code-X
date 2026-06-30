@@ -2,9 +2,25 @@
 	/** @type {{ items: {label: string, href: string}[] }} */
 	let { items } = $props();
 
-	/** @param {string} text */
-	function formatLabel(text) {
-		return text.replace(/X(?=[a-z]|ion|ing|$)/g, '<span class="x-char">X</span>');
+	/**
+	 * Split a label into plain-text and x-char segments without using innerHTML.
+	 * Avoids {@html} entirely — labels from props/nav data are trusted but the
+	 * pattern is unsafe if labels ever become user-supplied.
+	 * @param {string} text
+	 * @returns {{ t: 'text'|'x', v?: string }[]}
+	 */
+	function splitLabel(text) {
+		const segments = [];
+		const re = /X(?=[a-z]|ion|ing|$)/g;
+		let last = 0;
+		let match;
+		while ((match = re.exec(text)) !== null) {
+			if (match.index > last) segments.push({ t: 'text', v: text.slice(last, match.index) });
+			segments.push({ t: 'x' });
+			last = match.index + 1;
+		}
+		if (last < text.length) segments.push({ t: 'text', v: text.slice(last) });
+		return segments;
 	}
 </script>
 
@@ -18,9 +34,17 @@
 				<li class="crumb-sep" aria-hidden="true">/</li>
 				<li class="crumb-item">
 					{#if i < items.length - 1}
-						<a class="crumb-link" href={item.href}>{@html formatLabel(item.label)}</a>
+						<a class="crumb-link" href={item.href}>
+							{#each splitLabel(item.label) as seg}
+								{#if seg.t === 'x'}<span class="x-char">X</span>{:else}{seg.v}{/if}
+							{/each}
+						</a>
 					{:else}
-						<span class="crumb-current" aria-current="page">{@html formatLabel(item.label)}</span>
+						<span class="crumb-current" aria-current="page">
+							{#each splitLabel(item.label) as seg}
+								{#if seg.t === 'x'}<span class="x-char">X</span>{:else}{seg.v}{/if}
+							{/each}
+						</span>
 					{/if}
 				</li>
 			{/each}

@@ -39,9 +39,21 @@
 		}
 	});
 
-	/** @param {string} text */
-	function formatLabel(text) {
-		return text.replace(/X(?=[a-z]|ion|ing|$)/g, '<span class="x-char">X</span>');
+	/**
+	 * @param {string} text
+	 * @returns {{ t: 'text'|'x', v?: string }[]}
+	 */
+	function splitLabel(text) {
+		const segments = [];
+		const re = /X(?=[a-z]|ion|ing|$)/g;
+		let last = 0, match;
+		while ((match = re.exec(text)) !== null) {
+			if (match.index > last) segments.push({ t: 'text', v: text.slice(last, match.index) });
+			segments.push({ t: 'x' });
+			last = match.index + 1;
+		}
+		if (last < text.length) segments.push({ t: 'text', v: text.slice(last) });
+		return segments;
 	}
 </script>
 
@@ -60,7 +72,7 @@
 				<Icon size={depth === 0 ? 20 : 16} />
 			</span>
 		{/if}
-		<span class="nav-label">{@html formatLabel(node.label)}</span>
+		<span class="nav-label">{#each splitLabel(node.label) as seg}{#if seg.t === 'x'}<span class="x-char">X</span>{:else}{seg.v}{/if}{/each}</span>
 		{#if isCurrentPage}
 			<span class="active-dot" aria-hidden="true"></span>
 		{/if}
@@ -80,7 +92,7 @@
 						<Icon size={depth === 0 ? 20 : 16} />
 					</span>
 				{/if}
-				<span class="nav-label">{@html formatLabel(node.label)}</span>
+				<span class="nav-label">{#each splitLabel(node.label) as seg}{#if seg.t === 'x'}<span class="x-char">X</span>{:else}{seg.v}{/if}{/each}</span>
 			</a>
 		{:else}
 			<button
@@ -97,7 +109,7 @@
 						<Icon size={depth === 0 ? 20 : 16} />
 					</span>
 				{/if}
-				<span class="nav-label">{@html formatLabel(node.label)}</span>
+				<span class="nav-label">{#each splitLabel(node.label) as seg}{#if seg.t === 'x'}<span class="x-char">X</span>{:else}{seg.v}{/if}{/each}</span>
 			</button>
 		{/if}
 
