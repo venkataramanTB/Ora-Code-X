@@ -20,7 +20,12 @@ async def lifespan(app: FastAPI):
     await close_pool()
 
 
-app = FastAPI(title="OraCodeX Backend", version="1.0.0", lifespan=lifespan)
+app = FastAPI(
+    title="OraCodeX Backend",
+    version="1.0.0",
+    lifespan=lifespan,
+    redirect_slashes=False,
+)
 
 app.add_middleware(
     CORSMiddleware,
