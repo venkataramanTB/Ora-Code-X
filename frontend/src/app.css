@@ -44,6 +44,20 @@
 	--orb-2:       #f5a623;
 	--orb-3:       #3c1478;
 	--orb-opacity: 0.07;
+
+	/* ── Personality tokens — overridden per data-style ── */
+	--font-family:        'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--font-weight-normal: 400;
+	--font-weight-bold:   700;
+	--letter-spacing-ui:  0.10em;
+	--radius-tile:        20px;
+	--radius-chip:        20px;
+	--radius-card:        20px;
+	--radius-avatar:      50%;
+	--transition-speed:   220ms;
+	--transition-easing:  cubic-bezier(0.16, 1, 0.3, 1);
+	--tile-hover-lift:    -4px;
+	--orb-blur:           120px;
 }
 
 /* ── Per-theme variable overrides ────────────────────────── */
@@ -138,7 +152,7 @@ html, body {
 	height: 100%;
 	background-color: var(--bg-base);
 	color: var(--text-primary);
-	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	font-family: var(--font-family);
 	font-size: 14px;
 	line-height: 1.5;
 	-webkit-font-smoothing: antialiased;
@@ -1039,4 +1053,211 @@ html[data-style="maximal"][data-color="light"] {
 	--orb-2:              #ff6a00;
 	--orb-3:              #ffa080;
 	--orb-opacity:        0.15;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PER-STYLE PERSONALITY SYSTEM
+   Each style gets a distinct typeface, motion timing, geometry,
+   interaction behavior, and optional texture layer.
+   All rules come after colour-DNA so specificity cascade is clean.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── NEO — default, no overrides needed ──────────────────────── */
+
+/* ── MINIMAL — geometric sans, instant, invisible ────────────── */
+
+html[data-style="minimal"] {
+	--font-family:        'DM Sans', system-ui, sans-serif;
+	--font-weight-bold:   500;
+	--letter-spacing-ui:  0.04em;
+	--radius-tile:        8px;
+	--radius-chip:        6px;
+	--radius-card:        10px;
+	--transition-speed:   120ms;
+	--transition-easing:  linear;
+	--tile-hover-lift:    -2px;
+}
+
+/* Kill JS-driven 3D tilt — minimal has no physics */
+html[data-style="minimal"] .tile {
+	transform: none !important;
+	transition: box-shadow var(--transition-speed) var(--transition-easing),
+	            transform  var(--transition-speed) var(--transition-easing) !important;
+}
+html[data-style="minimal"] .tile:hover:not(.pressing) {
+	transform: translateY(var(--tile-hover-lift)) !important;
+	box-shadow:
+		0 6px 18px rgba(0,0,0,0.14),
+		0 0 0 1px rgba(var(--accent-primary-rgb), 0.18) !important;
+}
+html[data-style="minimal"] .tile:not(.pressing) {
+	box-shadow: 0 1px 3px rgba(0,0,0,0.10), 0 0 0 1px var(--border-subtle) !important;
+}
+/* Strip all visual noise — absence is the aesthetic */
+html[data-style="minimal"] .tile-glow    { display: none !important; }
+html[data-style="minimal"] .depth-shadow { display: none !important; }
+html[data-style="minimal"] .border-glow  { display: none !important; }
+html[data-style="minimal"] .shine        { display: none !important; }
+/* Subtler icon bounce */
+html[data-style="minimal"] .tile:hover .tile-icon {
+	transform: scale(1.05) translateY(-1px) !important;
+}
+
+/* ── SKEUOMORPHIC — warm serif, weighted, material ───────────── */
+
+html[data-style="skeu"] {
+	--font-family:       'Libre Baskerville', Georgia, serif;
+	--letter-spacing-ui: 0.02em;
+	--radius-tile:       18px;
+	--radius-chip:       14px;
+	--radius-card:       22px;
+	--transition-speed:  380ms;
+	--transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html[data-style="skeu"] .tile {
+	transition: box-shadow var(--transition-speed) var(--transition-easing) !important;
+}
+/* Physical materials don't glow at their borders */
+html[data-style="skeu"] .border-glow { display: none !important; }
+
+/* Paper grain on dark mode tile surfaces */
+html[data-style="skeu"][data-color="dark"] .neo-convex,
+html[data-style="skeu"][data-color="dark"] .tile {
+	background-image:
+		repeating-linear-gradient(
+			0deg,
+			transparent 0, transparent 2px,
+			rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 3px
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent 0, transparent 2px,
+			rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 3px
+		) !important;
+}
+
+/* ── BRUTALISM — monospace, binary snap, crosshair ───────────── */
+
+html[data-style="brutal"] {
+	--font-family:        'Space Mono', 'Courier New', monospace;
+	--font-weight-normal: 700;
+	--font-weight-bold:   700;
+	--letter-spacing-ui:  0.18em;
+	--radius-tile:        0px;
+	--radius-chip:        0px;
+	--radius-card:        0px;
+	--radius-avatar:      0px;
+	--transition-speed:   80ms;
+	--transition-easing:  steps(1);
+	--tile-hover-lift:    0px;
+}
+
+/* Binary snap — zero easing, translate-only hover, no spring */
+html[data-style="brutal"] .tile {
+	transform: none !important;
+	cursor: crosshair;
+	transition: box-shadow 80ms steps(1), transform 80ms steps(1) !important;
+}
+html[data-style="brutal"] .tile:hover:not(.pressing) {
+	transform: translate(-4px, -4px) !important;
+	box-shadow: 10px 10px 0 var(--accent-primary) !important;
+}
+html[data-style="brutal"] .tile-inner  { cursor: crosshair; }
+
+/* UPPERCASE everything — brutalism shouts */
+html[data-style="brutal"] .tile-label,
+html[data-style="brutal"] .tile-label span,
+html[data-style="brutal"] .hero-title,
+html[data-style="brutal"] .wide-title,
+html[data-style="brutal"] .chip a {
+	text-transform: uppercase !important;
+	letter-spacing: 0.14em !important;
+}
+html[data-style="brutal"] .hero-sub {
+	text-transform: uppercase !important;
+	font-size: 9px !important;
+	letter-spacing: 0.12em !important;
+}
+
+/* No icon dance — just snap color */
+html[data-style="brutal"] .tile:hover .tile-icon {
+	transform: none !important;
+}
+
+/* Strip softness entirely */
+html[data-style="brutal"] .tile-glow    { display: none !important; }
+html[data-style="brutal"] .depth-shadow { display: none !important; }
+html[data-style="brutal"] .shine        { display: none !important; }
+html[data-style="brutal"] .border-glow  { display: none !important; }
+
+/* Grid texture — the brutalism IS the grid */
+html[data-style="brutal"] body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: 0;
+	background-image:
+		repeating-linear-gradient(
+			0deg,
+			transparent 0, transparent 23px,
+			rgba(var(--accent-primary-rgb), 0.025) 23px,
+			rgba(var(--accent-primary-rgb), 0.025) 24px
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent 0, transparent 23px,
+			rgba(var(--accent-primary-rgb), 0.025) 23px,
+			rgba(var(--accent-primary-rgb), 0.025) 24px
+		);
+}
+
+/* Accent-coloured selection highlight */
+html[data-style="brutal"] ::selection {
+	background: var(--accent-primary);
+	color: var(--bg-base);
+}
+
+/* ── MAXIMALISM — expressive, bouncy, shimmer ────────────────── */
+
+html[data-style="maximal"] {
+	--font-family:        'Plus Jakarta Sans', sans-serif;
+	--font-weight-normal: 300;
+	--font-weight-bold:   800;
+	--letter-spacing-ui:  0.06em;
+	--radius-tile:        28px;
+	--radius-chip:        28px;
+	--radius-card:        32px;
+	--transition-speed:   340ms;
+	--transition-easing:  cubic-bezier(0.34, 1.56, 0.64, 1);
+	--tile-hover-lift:    -8px;
+}
+
+html[data-style="maximal"] .tile {
+	transition: box-shadow var(--transition-speed) var(--transition-easing) !important;
+}
+/* Dramatic icon lift */
+html[data-style="maximal"] .tile:hover .tile-icon {
+	transform: scale(1.18) translateY(-5px) !important;
+}
+/* Shimmer sweep on the ambient glow layer */
+html[data-style="maximal"] .tile:hover .tile-glow {
+	animation: glow-sweep 2.4s linear infinite !important;
+	background: linear-gradient(
+		105deg,
+		transparent 20%,
+		rgba(var(--accent-primary-rgb), 0.22) 50%,
+		transparent 80%
+	) !important;
+	background-size: 200% 100% !important;
+	opacity: 1 !important;
+}
+/* Pill-shaped chips */
+html[data-style="maximal"] .chip   { border-radius: 28px !important; }
+html[data-style="maximal"] .chip a { border-radius: 28px !important; }
+
+@keyframes glow-sweep {
+	from { background-position: 200% center; }
+	to   { background-position: -200% center; }
 }

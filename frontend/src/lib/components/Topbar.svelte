@@ -1,15 +1,16 @@
 <script>
 	import { spring } from 'svelte/motion';
-	import { Show, UserButton } from 'svelte-clerk';
+	import { Show, UserButton, useClerkContext } from 'svelte-clerk';
 	import { scrolled } from '$lib/stores/theme.js';
 	import { sidebarOpen } from '$lib/stores/navigation.js';
-	import { NAV_ITEMS, TAGLINE } from '$lib/data/nav.js';
+	import { TAGLINE } from '$lib/data/nav.js';
 	import { ICON_MAP } from '$lib/data/icons.js';
 	import { magnetic } from '$lib/actions/magnetic.js';
 	import { snappy } from '$lib/motion/springs.js';
 	import AppearancePicker from '$lib/components/AppearancePicker.svelte';
 
 	const MenuIcon   = ICON_MAP['Menu'];
+	const CloseIcon  = ICON_MAP['X'];
 	const SearchIcon = ICON_MAP['Search'];
 
 	const topbarH  = spring(68, snappy);
@@ -20,8 +21,10 @@
 		taglineH.set($scrolled ? 0 : 32);
 	});
 
-	function formatLabel(text) {
-		return text.replace(/X(?=[a-z]|ion|ing|$)/g, '<span class="x-char">X</span>');
+	const { user } = useClerkContext();
+
+	function getInitials(u) {
+		return ((u?.firstName?.[0] ?? '') + (u?.lastName?.[0] ?? '')).toUpperCase() || '?';
 	}
 </script>
 
@@ -29,57 +32,62 @@
 	<span class="top-shine" aria-hidden="true"></span>
 
 	<div class="topbar-inner" style:height="{$topbarH}px">
-		{#if $scrolled}
+
+		<!-- ── Left: hamburger + logo ── -->
+		<div class="left-cluster">
 			<button
 				class="hamburger"
+				class:is-open={$sidebarOpen}
 				onclick={() => sidebarOpen.update(v => !v)}
-				aria-label="Open navigation"
+				aria-label={$sidebarOpen ? 'Close navigation' : 'Open navigation'}
+				aria-expanded={$sidebarOpen}
+				use:magnetic
 			>
-				<MenuIcon size={18} />
-				<span class="hamburger-label">Menu</span>
+				<span class="hamburger-icon">
+					{#if $sidebarOpen}
+						<CloseIcon size={15} />
+					{:else}
+						<MenuIcon size={15} />
+					{/if}
+				</span>
+				<span class="hamburger-label">{$sidebarOpen ? 'Close' : 'Menu'}</span>
 			</button>
-		{/if}
 
-		<!-- Logo -->
-		<a class="logo-link" href="/" use:magnetic>
-			<span class="logo-mark" aria-hidden="true">O</span>
-			<span class="logo-text">
-				OraCode<span class="x-char">X</span>
-				<span class="logo-sub">Studio</span>
-			</span>
-		</a>
+			<a class="logo-link" href="/" use:magnetic>
+				<span class="logo-mark" aria-hidden="true">O</span>
+				<span class="logo-text">
+					<span class="logo-name">OraCode<span class="x-char">X</span></span>
+					<span class="logo-sub">Studio</span>
+				</span>
+			</a>
+		</div>
 
-		{#if !$scrolled}
-			<nav class="topbar-nav" aria-label="Top navigation">
-				{#each NAV_ITEMS as item (item.id)}
-					{@const Icon = ICON_MAP[item.iconName]}
-					<a
-						class="nav-link"
-						href="/{item.id}"
-						style="--item-accent:{item.accent}"
-						use:magnetic
-					>
-						{#if Icon}
-							<span class="nav-link-icon" style:color={item.accent}>
-								<Icon size={14} strokeWidth={2} />
-							</span>
-						{/if}
-						<span>{@html formatLabel(item.label)}</span>
-					</a>
-				{/each}
-			</nav>
-		{/if}
-
+		<!-- ── Right: actions ── -->
 		<div class="topbar-actions">
 			<button class="icon-btn search-btn" aria-label="Search" use:magnetic>
-				<SearchIcon size={16} />
+				<SearchIcon size={15} />
+				<span class="search-hint">Search…</span>
 			</button>
 
 			<AppearancePicker />
 
 			<Show when="signed-in">
-				<div class="clerk-user-btn">
-					<UserButton afterSignOutUrl="/sign-in" />
+				<div class="user-zone">
+					{#if user?.imageUrl}
+						<img
+							class="user-avatar"
+							src={user.imageUrl}
+							alt="Profile"
+							aria-hidden="true"
+						/>
+					{:else}
+						<span class="user-avatar user-initials" aria-hidden="true">
+							{getInitials(user)}
+						</span>
+					{/if}
+					<div class="clerk-user-btn">
+						<UserButton afterSignOutUrl="/sign-in" />
+					</div>
 				</div>
 			</Show>
 			<Show when="signed-out">
@@ -113,18 +121,13 @@
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
-
 		background: var(--topbar-bg);
-
 		box-shadow:
 			-6px -6px 14px var(--shadow-light),
 			 6px  6px 14px var(--shadow-dark),
 			 0    0   40px rgba(0, 0, 0, 0.3),
 			inset 0 1px 0 var(--border-subtle);
-
 		transition: box-shadow 0.3s ease;
-
-		/* Captured independently by View Transitions API — stays locked during page transitions */
 		view-transition-name: topbar;
 	}
 
@@ -160,34 +163,93 @@
 		z-index: 4;
 	}
 
+	/* ── Inner row ──────────────────────────────────── */
+
 	.topbar-inner {
 		display: flex;
 		align-items: center;
-		gap: 10px;
-		padding: 0 20px;
+		justify-content: space-between;
+		padding: 0 16px 0 12px;
 		position: relative;
 		z-index: 2;
 		flex-shrink: 0;
 	}
 
-	/* ── Logo ────────────────────────────────────── */
+	/* ── Left cluster ────────────────────────────────── */
+
+	.left-cluster {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	/* ── Hamburger ───────────────────────────────────── */
+
+	.hamburger {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		padding: 6px 12px 6px 9px;
+		border-radius: 11px;
+		border: 1px solid rgba(var(--accent-primary-rgb), 0.20);
+		background: rgba(var(--accent-primary-rgb), 0.06);
+		color: var(--text-muted);
+		cursor: pointer;
+		font-size: 11.5px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, color 0.15s;
+		flex-shrink: 0;
+	}
+
+	.hamburger:hover {
+		background: rgba(var(--accent-primary-rgb), 0.12);
+		border-color: rgba(var(--accent-primary-rgb), 0.38);
+		color: var(--accent-primary);
+		box-shadow: 0 0 12px rgba(var(--accent-primary-rgb), 0.12);
+	}
+
+	.hamburger.is-open {
+		background: rgba(var(--accent-primary-rgb), 0.12);
+		border-color: rgba(var(--accent-primary-rgb), 0.38);
+		color: var(--accent-primary);
+		box-shadow: 0 0 14px rgba(var(--accent-primary-rgb), 0.14);
+	}
+
+	.hamburger-icon {
+		display: flex;
+		align-items: center;
+		transition: transform 0.22s ease;
+	}
+
+	.hamburger.is-open .hamburger-icon {
+		transform: rotate(90deg);
+	}
+
+	.hamburger-label {
+		font-size: 11.5px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+	}
+
+	/* ── Logo ────────────────────────────────────────── */
 
 	.logo-link {
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 9px;
 		text-decoration: none;
 		flex-shrink: 0;
 		user-select: none;
 	}
 
 	.logo-mark {
-		width: 32px; height: 32px;
-		border-radius: 9px;
+		width: 30px; height: 30px;
+		border-radius: 8px;
 		background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.15) 0%, rgba(var(--accent-primary-rgb), 0.05) 100%);
 		border: 1px solid rgba(var(--accent-primary-rgb), 0.25);
 		display: flex; align-items: center; justify-content: center;
-		font-size: 15px; font-weight: 800;
+		font-size: 14px; font-weight: 800;
 		color: var(--accent-primary);
 		text-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.6);
 		box-shadow: 0 0 12px rgba(var(--accent-primary-rgb), 0.1), inset 0 1px 0 rgba(255,255,255,0.06);
@@ -200,16 +262,17 @@
 		line-height: 1;
 	}
 
-	.logo-text > :first-child {
-		font-size: 15px;
+	.logo-name {
+		font-size: 14.5px;
 		font-weight: 700;
 		color: var(--text-accent);
 		letter-spacing: -0.02em;
 		white-space: nowrap;
+		line-height: 1;
 	}
 
 	.logo-sub {
-		font-size: 10px;
+		font-size: 9.5px;
 		font-weight: 500;
 		color: var(--text-muted);
 		letter-spacing: 0.12em;
@@ -218,67 +281,12 @@
 		display: block;
 	}
 
-	/* ── Nav ─────────────────────────────────────── */
-
-	.topbar-nav {
-		display: flex;
-		align-items: center;
-		gap: 2px;
-		flex: 1;
-		justify-content: center;
-		padding: 0 8px;
-	}
-
-	.nav-link {
-		display: flex;
-		align-items: center;
-		gap: 5px;
-		padding: 5px 12px;
-		color: var(--text-muted);
-		text-decoration: none;
-		font-size: 12.5px;
-		font-weight: 500;
-		border-radius: 10px;
-		white-space: nowrap;
-		transition: color 0.15s, background 0.15s;
-		position: relative;
-		letter-spacing: 0.01em;
-	}
-
-	.nav-link::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		border-radius: inherit;
-		background: linear-gradient(135deg, var(--item-accent), transparent);
-		opacity: 0;
-		transition: opacity 0.2s;
-	}
-
-	.nav-link:hover {
-		color: var(--text-accent);
-		background: rgba(255, 255, 255, 0.04);
-	}
-
-	.nav-link:hover::before { opacity: 0.05; }
-
-	.nav-link:hover .nav-link-icon {
-		filter: drop-shadow(0 0 5px var(--item-accent));
-	}
-
-	.nav-link-icon {
-		display: flex;
-		align-items: center;
-		transition: filter 0.2s;
-	}
-
-	/* ── Actions ─────────────────────────────────── */
+	/* ── Actions ─────────────────────────────────────── */
 
 	.topbar-actions {
 		display: flex;
 		align-items: center;
 		gap: 6px;
-		margin-left: auto;
 	}
 
 	.icon-btn {
@@ -301,43 +309,79 @@
 
 	.search-btn {
 		border: 1px solid var(--border-subtle);
-		border-radius: 10px;
-		padding: 6px 10px;
+		padding: 5px 12px 5px 9px;
 		gap: 6px;
-		font-size: 12px;
+		border-radius: 10px;
 		color: var(--text-muted);
-		min-width: 36px;
 	}
 
-	/* Clerk UserButton wrapper */
-	.clerk-user-btn {
+	.search-hint {
+		font-size: 11.5px;
+		font-weight: 400;
+		letter-spacing: 0.01em;
+		opacity: 0.6;
+	}
+
+	/* User avatar + Clerk overlay */
+	.user-zone {
+		position: relative;
+		width: 32px;
+		height: 32px;
+		flex-shrink: 0;
+	}
+
+	.user-avatar {
+		width: 32px;
+		height: 32px;
+		border-radius: var(--radius-avatar, 50%);
+		object-fit: cover;
+		border: 1px solid rgba(var(--accent-primary-rgb), 0.35);
+		box-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.14);
+		display: block;
+		transition: border-color 0.15s, box-shadow 0.15s;
+	}
+	.user-zone:hover .user-avatar {
+		border-color: rgba(var(--accent-primary-rgb), 0.6);
+		box-shadow: 0 0 18px rgba(var(--accent-primary-rgb), 0.28);
+	}
+
+	.user-initials {
+		background: rgba(var(--accent-primary-rgb), 0.14);
+		color: var(--accent-primary);
 		display: flex;
 		align-items: center;
+		justify-content: center;
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+	}
+
+	.clerk-user-btn {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.clerk-user-btn :global(.cl-userButtonTrigger) {
-		width: 34px;
-		height: 34px;
-		border-radius: 50%;
-		border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
-		box-shadow: 0 0 12px rgba(var(--accent-primary-rgb), 0.12);
-		transition: box-shadow 0.15s;
-	}
-	.clerk-user-btn :global(.cl-userButtonTrigger:hover) {
-		box-shadow: 0 0 20px rgba(var(--accent-primary-rgb), 0.25);
-		border-color: rgba(var(--accent-primary-rgb), 0.5);
+		width: 32px !important;
+		height: 32px !important;
+		opacity: 0 !important;
+		cursor: pointer !important;
+		border-radius: var(--radius-avatar, 50%) !important;
 	}
 
 	.sign-in-pill {
 		display: flex;
 		align-items: center;
-		padding: 6px 16px;
-		border-radius: 12px;
+		padding: 5px 14px;
+		border-radius: 11px;
 		border: 1px solid rgba(var(--accent-primary-rgb), 0.28);
 		background: rgba(var(--accent-primary-rgb), 0.07);
 		color: var(--accent-primary);
 		text-decoration: none;
-		font-size: 12.5px;
+		font-size: 12px;
 		font-weight: 600;
 		letter-spacing: 0.03em;
 		transition: background 0.15s, box-shadow 0.15s, border-color 0.15s;
@@ -348,35 +392,7 @@
 		box-shadow: 0 0 14px rgba(var(--accent-primary-rgb), 0.15);
 	}
 
-	.hamburger {
-		display: flex;
-		align-items: center;
-		gap: 7px;
-		padding: 6px 14px 6px 10px;
-		border-radius: 12px;
-		border: 1px solid rgba(var(--accent-primary-rgb), 0.22);
-		background: rgba(var(--accent-primary-rgb), 0.07);
-		color: var(--accent-primary);
-		cursor: pointer;
-		font-size: 12px;
-		font-weight: 600;
-		letter-spacing: 0.04em;
-		transition: background 0.15s, box-shadow 0.15s, border-color 0.15s;
-		flex-shrink: 0;
-	}
-
-	.hamburger:hover {
-		background: rgba(var(--accent-primary-rgb), 0.14);
-		border-color: rgba(var(--accent-primary-rgb), 0.4);
-		box-shadow: 0 0 14px rgba(var(--accent-primary-rgb), 0.15);
-	}
-
-	.hamburger-label {
-		color: var(--text-muted);
-		font-size: 11.5px;
-	}
-
-	/* ── Tagline marquee ─────────────────────────── */
+	/* ── Tagline marquee ──────────────────────────────── */
 
 	.tagline-bar {
 		overflow: hidden;

@@ -134,7 +134,7 @@
 		cursor: default;
 		will-change: transform;
 		/* transitions only for box-shadow — transform is JS-controlled via spring */
-		transition: box-shadow 0.22s ease;
+		transition: box-shadow var(--transition-speed, 220ms) var(--transition-easing, ease);
 	}
 
 	/* ── Press state ────────────────────────────────── */
@@ -253,7 +253,9 @@
 		display: flex;
 		align-items: center;
 		flex-shrink: 0;
-		transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), filter 0.25s ease;
+		transition:
+			transform var(--transition-speed, 250ms) var(--transition-easing, cubic-bezier(0.16,1,0.3,1)),
+			filter    var(--transition-speed, 250ms) ease;
 	}
 	.tile:hover .tile-icon {
 		transform: scale(1.11) translateY(-3px);
@@ -268,8 +270,8 @@
 		position: relative;
 		z-index: 1;
 		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.10em;
+		font-weight: var(--font-weight-bold, 700);
+		letter-spacing: var(--letter-spacing-ui, 0.10em);
 		text-transform: uppercase;
 		color: var(--text-muted);
 		transition: color 0.2s;
@@ -338,7 +340,7 @@
 	.is-wide .chips  { padding: 0 28px 16px; }
 
 	.chip {
-		border-radius: 20px;
+		border-radius: var(--radius-chip, 20px);
 		opacity: 0;
 		animation: chipIn 0.24s ease forwards;
 	}
@@ -349,7 +351,7 @@
 		font-size: 11.5px;
 		color: var(--text-muted);
 		text-decoration: none;
-		border-radius: 20px;
+		border-radius: var(--radius-chip, 20px);
 		transition: color 0.15s, background 0.15s;
 		white-space: nowrap;
 	}

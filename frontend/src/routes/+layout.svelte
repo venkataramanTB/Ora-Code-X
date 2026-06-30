@@ -115,7 +115,8 @@
 		padding-top: 120px;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
+		align-items: stretch;
+		width: 100%;
 	}
 
 	.auth-main {

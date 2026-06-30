@@ -24,3 +24,10 @@ vite.config.ts.timestamp-*
 
 # Root src/ leftover (locked by IDE on Windows during restructure)
 /src/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
