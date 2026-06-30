@@ -28,8 +28,5 @@
     "lucide-svelte": "^1.0.1",
     "svelte-clerk": "^1.1.10",
     "@sveltejs/adapter-static": "^3.0.10"
-  },
-  "engines": {
-    "node": ">=20.19.0"
   }
 }
