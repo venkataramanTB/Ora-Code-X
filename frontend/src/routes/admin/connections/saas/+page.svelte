@@ -41,6 +41,26 @@
 	let toast = $state(null);
 	let toastTimer = /** @type {ReturnType<typeof setTimeout>|null} */ (null);
 
+	/** @type {Record<string, {success: boolean, message: string, latency_ms: number}>} */
+	let testResults = $state({});
+	/** @type {Record<string, ReturnType<typeof setTimeout>>} */
+	const resultTimers = {};
+
+	/** @param {string} id */
+	function dismissResult(id) {
+		if (resultTimers[id]) { clearTimeout(resultTimers[id]); delete resultTimers[id]; }
+		const copy = { ...testResults };
+		delete copy[id];
+		testResults = copy;
+	}
+
+	/** @param {string} id @param {{success: boolean, message: string, latency_ms: number}} result */
+	function storeResult(id, result) {
+		if (resultTimers[id]) clearTimeout(resultTimers[id]);
+		testResults = { ...testResults, [id]: result };
+		resultTimers[id] = setTimeout(() => dismissResult(id), 10000);
+	}
+
 	let form = $state({ connection_name: '', username: '', password: '', instance_url: '' });
 
 	// ── Derived stats ──────────────────────────────────────────────────────────
@@ -107,17 +127,21 @@
 	/** @param {string} id */
 	async function testConnection(id) {
 		testingId = id;
+		dismissResult(id);
 		try {
 			const res  = await fetch(`${API}/api/connections/${id}/test`, { method: 'POST', headers: await authHeaders() });
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.detail ?? data.error ?? 'Test failed');
 			connections = connections.map(c => c.id === id ? data.connection : c);
+			storeResult(id, { success: data.success, message: data.message, latency_ms: data.latency_ms });
 			showToast(
 				data.success ? `Connected — ${data.latency_ms}ms` : `Failed: ${data.message}`,
 				data.success ? 'success' : 'error',
 			);
 		} catch (err) {
-			showToast(/** @type {Error} */ (err).message, 'error');
+			const msg = /** @type {Error} */ (err).message;
+			storeResult(id, { success: false, message: msg, latency_ms: 0 });
+			showToast(msg, 'error');
 		} finally { testingId = null; }
 	}
 
@@ -400,6 +424,31 @@
 						{/if}
 					</div>
 				</div>
+
+				{#if testResults[conn.id]}
+					{@const r = testResults[conn.id]}
+					<div class="test-result-panel" class:result-success={r.success} class:result-error={!r.success}>
+						<div class="result-indicator">
+							{#if r.success}
+								<svg viewBox="0 0 16 16" width="14" height="14" fill="none"><path d="M2.5 8.5l3.5 3.5 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+							{:else}
+								<svg viewBox="0 0 16 16" width="14" height="14" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+							{/if}
+						</div>
+						<div class="result-body">
+							<span class="result-title">
+								{r.success ? 'Connection successful' : 'Connection failed'}
+								{#if r.latency_ms}
+									<span class="result-latency">· {r.latency_ms}ms</span>
+								{/if}
+							</span>
+							<span class="result-msg">{r.message}</span>
+						</div>
+						<button class="result-dismiss" onclick={() => dismissResult(conn.id)} aria-label="Dismiss result">
+							<svg viewBox="0 0 16 16" width="11" height="11" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+						</button>
+					</div>
+				{/if}
 			{/each}
 		{/if}
 	</div>
@@ -900,6 +949,95 @@
 		to   { opacity:1; transform:translateX(-50%) translateY(0); }
 	}
 
+	/* ── Test result panel ────────────────────────────────────────────────── */
+	.test-result-panel {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+		padding: 13px 20px 13px 16px;
+		border-bottom: 1px solid rgba(255,255,255,.04);
+		animation: result-slide-in 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+		overflow: hidden;
+	}
+
+	@keyframes result-slide-in {
+		from { opacity: 0; transform: translateY(-6px); }
+		to   { opacity: 1; transform: translateY(0); }
+	}
+
+	.result-success {
+		background: rgba(0,230,118,.05);
+		border-left: 3px solid rgba(0,230,118,.6);
+	}
+
+	.result-error {
+		background: rgba(255,77,109,.06);
+		border-left: 3px solid rgba(255,77,109,.65);
+	}
+
+	.result-indicator {
+		flex-shrink: 0;
+		width: 28px; height: 28px;
+		display: flex; align-items: center; justify-content: center;
+		border-radius: 50%;
+		margin-top: 1px;
+	}
+
+	.result-success .result-indicator { background: rgba(0,230,118,.15); color: #00e676; }
+	.result-error   .result-indicator { background: rgba(255,77,109,.15); color: #ff4d6d; }
+
+	.result-body {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		min-width: 0;
+	}
+
+	.result-title {
+		font-size: 12.5px;
+		font-weight: 600;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		flex-wrap: wrap;
+	}
+
+	.result-success .result-title { color: #00e676; }
+	.result-error   .result-title { color: #ff4d6d; }
+
+	.result-latency {
+		font-size: 11.5px;
+		font-weight: 400;
+		color: var(--text-muted);
+		opacity: 0.7;
+	}
+
+	.result-msg {
+		font-size: 12.5px;
+		color: var(--text-muted);
+		line-height: 1.5;
+		word-break: break-word;
+	}
+
+	.result-dismiss {
+		flex-shrink: 0;
+		width: 26px; height: 26px;
+		display: flex; align-items: center; justify-content: center;
+		border-radius: 7px;
+		border: 1px solid rgba(255,255,255,.08);
+		background: rgba(255,255,255,.04);
+		color: var(--text-muted);
+		cursor: pointer;
+		opacity: 0.55;
+		transition: opacity .14s, background .14s;
+		margin-top: 1px;
+	}
+
+	.result-dismiss:hover { opacity: 1; background: rgba(255,255,255,.1); }
+
+	.row-testing { opacity: 0.75; transition: opacity .2s; }
+
 	/* ── Responsive ───────────────────────────────────────────────────────── */
 	@media (max-width: 840px) {
 		.page { padding: 20px 16px 48px; }
@@ -909,5 +1047,6 @@
 		.form-row { grid-template-columns: 1fr; }
 		.modal-footer { flex-direction: column; align-items: flex-start; }
 		.footer-actions { width: 100%; justify-content: flex-end; }
+		.test-result-panel { padding: 12px 16px; }
 	}
 </style>
