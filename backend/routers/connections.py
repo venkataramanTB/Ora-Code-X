@@ -100,7 +100,7 @@ def _row(record) -> dict:
 
 # ── GET /api/connections ──────────────────────────────────────────────────────
 
-@router.get("/", response_model=list[ConnectionOut])
+@router.get("", response_model=list[ConnectionOut])
 async def list_connections(_user_id: str = Depends(require_admin)):
     pool = await get_pool()
     async with pool.acquire() as conn:
