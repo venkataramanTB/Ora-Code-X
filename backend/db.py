@@ -61,4 +61,27 @@ async def init_db() -> None:
                 BEFORE UPDATE ON oracle_saas_connections
                 FOR EACH ROW EXECUTE FUNCTION update_updated_at()
         """)
-    print("✓ DB initialised — oracle_saas_connections table ready")
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS file_parsers (
+                id                UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
+                name              VARCHAR(255) NOT NULL UNIQUE,
+                original_filename VARCHAR(255) NOT NULL,
+                file_extension    VARCHAR(10)  NOT NULL CHECK (file_extension IN ('csv', 'txt')),
+                parse_type        VARCHAR(20)  NOT NULL CHECK (parse_type IN ('fixed_length', 'delimited')),
+                delimiter_char    VARCHAR(5),
+                has_header        BOOLEAN,
+                columns           JSONB        NOT NULL DEFAULT '[]',
+                status            VARCHAR(20)  NOT NULL DEFAULT 'configured',
+                created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+                updated_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+            )
+        """)
+        await conn.execute("""
+            DROP TRIGGER IF EXISTS trg_file_parsers_updated_at ON file_parsers
+        """)
+        await conn.execute("""
+            CREATE TRIGGER trg_file_parsers_updated_at
+                BEFORE UPDATE ON file_parsers
+                FOR EACH ROW EXECUTE FUNCTION update_updated_at()
+        """)
+    print("✓ DB initialised — oracle_saas_connections + file_parsers tables ready")
