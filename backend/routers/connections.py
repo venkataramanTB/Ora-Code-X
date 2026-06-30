@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import time
 import uuid
@@ -203,6 +204,51 @@ async def delete_connection(conn_id: uuid.UUID, _user_id: str = Depends(require_
     if row is None:
         raise HTTPException(status_code=404, detail="Connection not found")
     return {"deleted": True}
+
+
+# ── POST /api/connections/test-all ───────────────────────────────────────────
+
+@router.post("/test-all")
+async def test_all_connections(_user_id: str = Depends(require_admin)):
+    """Tests every stored connection in parallel, updates their status, and returns results."""
+    pool = await get_pool()
+    async with pool.acquire() as db:
+        rows = await db.fetch("""
+            SELECT id, connection_name, username, password_enc, instance_url
+            FROM oracle_saas_connections
+            ORDER BY created_at ASC
+        """)
+
+    if not rows:
+        return []
+
+    async def _test_one(record):
+        try:
+            password = decrypt(record["password_enc"])
+        except Exception as exc:
+            result = {"success": False, "message": f"Decryption error: {exc}", "latency_ms": 0}
+        else:
+            result = await _probe_oracle(record["instance_url"], record["username"], password)
+
+        db_status = "success" if result["success"] else "failed"
+        async with pool.acquire() as db:
+            await db.execute("""
+                UPDATE oracle_saas_connections
+                SET status = $1, last_tested_at = NOW(), error_message = $2
+                WHERE id = $3
+            """, db_status, None if result["success"] else result["message"], record["id"])
+
+        return {
+            "id": str(record["id"]),
+            "connection_name": record["connection_name"],
+            "instance_url": record["instance_url"],
+            "success": result["success"],
+            "message": result["message"],
+            "latency_ms": result["latency_ms"],
+        }
+
+    results = await asyncio.gather(*[_test_one(r) for r in rows])
+    return list(results)
 
 
 # ── POST /api/connections/{id}/test ───────────────────────────────────────────

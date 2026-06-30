@@ -19,6 +19,7 @@
 	import OrbBackground from '$lib/components/OrbBackground.svelte';
 	import Topbar from '$lib/components/Topbar.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
+	import ConnectionHealthMonitor from '$lib/components/ConnectionHealthMonitor.svelte';
 
 	let { data, children } = $props();
 
@@ -96,6 +97,7 @@
 	appearance={clerkAppearance}
 >
 	<OrbBackground />
+	<ConnectionHealthMonitor />
 
 	{#if !isAuthRoute}
 		<Topbar />

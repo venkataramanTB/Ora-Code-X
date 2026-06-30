@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { useClerkContext } from 'svelte-clerk';
+	import { page } from '$app/stores';
 	import { ICON_MAP } from '$lib/data/icons.js';
 
 	const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
@@ -192,6 +193,20 @@
 	}
 
 	onMount(loadConnections);
+
+	// Auto-open edit modal when navigated here with ?edit=<id>
+	// (set by ConnectionHealthMonitor after detecting a failing connection)
+	let autoEditConsumed = $state(false);
+	$effect(() => {
+		const editId = $page.url.searchParams.get('edit');
+		if (editId && !loading && connections.length > 0 && !autoEditConsumed) {
+			const conn = connections.find(c => c.id === editId);
+			if (conn) {
+				autoEditConsumed = true;
+				openEditModal(conn);
+			}
+		}
+	});
 </script>
 
 <svelte:window onkeydown={onKeydown} />
