@@ -10,6 +10,8 @@ const apiProxy = async ({ event, resolve }) => {
 	if (!event.url.pathname.startsWith('/api/')) return resolve(event);
 
 	const target = `${INTERNAL_API}${event.url.pathname}${event.url.search}`;
+	console.log("INTERNAL_API =", INTERNAL_API);
+	console.log("Proxy target =", target);
 
 	const headers = Object.fromEntries(
 		[...event.request.headers.entries()].filter(([k]) => !SKIP_HEADERS.has(k.toLowerCase())),
@@ -18,9 +20,10 @@ const apiProxy = async ({ event, resolve }) => {
 	const hasBody = !['GET', 'HEAD'].includes(event.request.method);
 
 	const upstream = await fetch(target, {
+		redirect: "manual",
 		method: event.request.method,
 		headers,
-		...(hasBody ? { body: await event.request.arrayBuffer() } : {}),
+		...(hasBody ? { body: await event.request.arrayBuffer() } : {})
 	});
 
 	const resHeaders = new Headers(upstream.headers);
