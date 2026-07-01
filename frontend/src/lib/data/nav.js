@@ -249,3 +249,9 @@ export const SMART_GENESIS_TAGLINE = {
 	title:       'Smart Genesis ConveX',
 	description: 'The next generation Oracle Cloud conversion engine that transforms enterprise data into cloud-ready intelligence through precision-driven transformation.',
 };
+
+export const DELIVERY_TAGLINE = {
+	prefix:      '',
+	title:       'DeliveryX',
+	description: 'A unified suite from Mythics of Oracle Cloud delivery accelerators engineered to simplify implementation, migration, conversion, and integration.',
+};
