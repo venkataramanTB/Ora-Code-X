@@ -79,39 +79,22 @@
 	</a>
 {:else}
 	<div class="nav-branch-wrap">
-		{#if node.href}
-			<a
-				class="nav-item nav-branch-link"
-				class:is-active={isActive}
-				class:depth-1={depth === 1}
-				href={node.href}
-				style="--item-accent:{accent}"
-			>
-				{#if Icon && depth <= 1}
-					<span class="nav-icon" style:color={accent}>
-						<Icon size={depth === 0 ? 20 : 16} />
-					</span>
-				{/if}
-				<span class="nav-label">{#each splitLabel(node.label) as seg}{#if seg.t === 'x'}<span class="x-char">X</span>{:else}{seg.v}{/if}{/each}</span>
-			</a>
-		{:else}
-			<button
-				class="nav-item nav-branch-btn"
-				class:is-active={isActive}
-				class:depth-1={depth === 1}
-				onclick={() => (expanded = !expanded)}
-				aria-expanded={expanded}
-				style="--item-accent:{accent}"
-				use:magnetic
-			>
-				{#if Icon && depth <= 1}
-					<span class="nav-icon" style:color={accent}>
-						<Icon size={depth === 0 ? 20 : 16} />
-					</span>
-				{/if}
-				<span class="nav-label">{#each splitLabel(node.label) as seg}{#if seg.t === 'x'}<span class="x-char">X</span>{:else}{seg.v}{/if}{/each}</span>
-			</button>
-		{/if}
+		<button
+			class="nav-item nav-branch-btn"
+			class:is-active={isActive}
+			class:depth-1={depth === 1}
+			onclick={() => (expanded = !expanded)}
+			aria-expanded={expanded}
+			style="--item-accent:{accent}"
+			use:magnetic
+		>
+			{#if Icon && depth <= 1}
+				<span class="nav-icon" style:color={accent}>
+					<Icon size={depth === 0 ? 20 : 16} />
+				</span>
+			{/if}
+			<span class="nav-label">{#each splitLabel(node.label) as seg}{#if seg.t === 'x'}<span class="x-char">X</span>{:else}{seg.v}{/if}{/each}</span>
+		</button>
 
 		{#if hasChildren}
 			<button
@@ -210,11 +193,6 @@
 	.nav-branch-wrap {
 		display: flex;
 		align-items: stretch;
-	}
-
-	.nav-branch-link {
-		flex: 1;
-		border-radius: 10px 0 0 10px;
 	}
 
 	.nav-branch-btn {
