@@ -247,11 +247,12 @@
 	/* ── Header toggle ── */
 	.toggle-row { display: flex; gap: 8px; }
 	.toggle-btn {
-		padding: 7px 22px; border-radius: 9px;
+		min-width: 80px; padding: 10px 0; border-radius: 11px;
 		border: 1px solid rgba(255,255,255,0.09);
 		background: rgba(255,255,255,0.03);
 		color: var(--text-muted); font-size: 13px; font-weight: 500;
-		cursor: pointer; transition: background .14s, border-color .14s, color .14s;
+		cursor: pointer; text-align: center;
+		transition: background .14s, border-color .14s, color .14s;
 	}
 	.toggle-btn:hover { background: rgba(255,77,109,0.08); color: var(--text-primary); }
 	.toggle-btn.active { background: rgba(255,77,109,0.12); border-color: rgba(255,77,109,0.4); color: #ff4d6d; font-weight: 600; }
