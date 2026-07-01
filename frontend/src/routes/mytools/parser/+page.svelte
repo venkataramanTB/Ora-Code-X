@@ -31,11 +31,10 @@
 
 	// ── Stats ──────────────────────────────────────────────────────────────────
 	const stats = $derived({
-		total:      parsers.length,
-		csv:        parsers.filter(/** @param {any} p */ p => p.file_extension === 'csv').length,
-		txt:        parsers.filter(/** @param {any} p */ p => p.file_extension === 'txt').length,
-		fixed:      parsers.filter(/** @param {any} p */ p => p.parse_type === 'fixed_length').length,
-		delimited:  parsers.filter(/** @param {any} p */ p => p.parse_type === 'delimited').length,
+		total:     parsers.length,
+		delimited: parsers.filter(/** @param {any} p */ p => p.parse_type === 'delimited').length,
+		fixed:     parsers.filter(/** @param {any} p */ p => p.parse_type === 'fixed_length').length,
+		excel:     parsers.filter(/** @param {any} p */ p => p.file_extension === 'xls' || p.file_extension === 'xlsx').length,
 	});
 
 	// ── Toast ──────────────────────────────────────────────────────────────────
@@ -103,7 +102,9 @@
 
 	/** @param {string} ext */
 	function extColor(ext) {
-		return ext === 'csv' ? '#00e676' : '#4fc3f7';
+		if (ext === 'xls' || ext === 'xlsx') return '#00e676';
+		if (ext === 'txt') return '#4fc3f7';
+		return '#b39ddb';
 	}
 
 	onMount(loadParsers);
@@ -147,10 +148,9 @@
 	<!-- Stats -->
 	<div class="stats-bar">
 		<div class="stat"><span class="stat-val">{stats.total}</span><span class="stat-label">Total</span></div>
-		<div class="stat stat-csv"><span class="stat-val">{stats.csv}</span><span class="stat-label">CSV</span></div>
-		<div class="stat stat-txt"><span class="stat-val">{stats.txt}</span><span class="stat-label">TXT</span></div>
 		<div class="stat stat-delimited"><span class="stat-val">{stats.delimited}</span><span class="stat-label">Delimited</span></div>
 		<div class="stat stat-fixed"><span class="stat-val">{stats.fixed}</span><span class="stat-label">Fixed Length</span></div>
+		<div class="stat stat-excel"><span class="stat-val">{stats.excel}</span><span class="stat-label">XLS / XLSX</span></div>
 	</div>
 
 	<!-- List -->
@@ -275,10 +275,9 @@
 	}
 	.stat-val   { font-size: 22px; font-weight: 700; color: var(--text-accent); line-height: 1; }
 	.stat-label { font-size: 10.5px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; }
-	.stat-csv  .stat-val { color: #00e676; }
-	.stat-txt  .stat-val { color: #4fc3f7; }
 	.stat-delimited .stat-val { color: #b39ddb; }
 	.stat-fixed     .stat-val { color: #f5a623; }
+	.stat-excel     .stat-val { color: #00e676; }
 
 	/* ── List ── */
 	.list-wrap {
