@@ -52,7 +52,7 @@
 			<div class="header-brand">
 				<span class="brand-mark" style="color:{activeSection?.accent ?? 'var(--accent-primary)'}">O</span>
 				<div class="brand-text">
-					<span class="brand-name">OraCode<span class="x-char">X</span></span>
+					<span class="brand-name">OraBridge<span class="x-char">X</span></span>
 					<span class="brand-sub">Nexus</span>
 				</div>
 			</div>

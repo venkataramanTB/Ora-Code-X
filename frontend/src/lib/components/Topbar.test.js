@@ -8,7 +8,7 @@ beforeEach(() => scrolled.set(false));
 describe('Topbar', () => {
 	it('renders the logo', () => {
 		const { getAllByText } = render(Topbar);
-		expect(getAllByText(/OraCode/).length).toBeGreaterThan(0);
+		expect(getAllByText(/OraBridge/).length).toBeGreaterThan(0);
 	});
 
 	it('shows nav when not scrolled', () => {

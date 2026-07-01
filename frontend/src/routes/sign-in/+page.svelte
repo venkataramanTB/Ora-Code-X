@@ -9,7 +9,7 @@
 <div class="auth-page">
 	<div class="auth-brand">
 		<span class="brand-mark">O</span>
-		<span class="brand-name">OraCode<span class="x-char">X</span> <span class="brand-sub">Nexus</span></span>
+		<span class="brand-name">OraBridge<span class="x-char">X</span> <span class="brand-sub">Nexus</span></span>
 	</div>
 
 	<SignIn
