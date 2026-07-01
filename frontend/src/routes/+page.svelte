@@ -36,7 +36,7 @@
 </script>
 
 <svelte:head>
-	<title>OraCodeX Nexus</title>
+	<title>OraBridgeX Nexus</title>
 	<meta name="description" content="The Intelligent Oracle Cloud Delivery Platform" />
 </svelte:head>
 
@@ -47,7 +47,7 @@
 		<p class="eyebrow">Welcome to</p>
 
 		<h1 class="hero-title">
-			OraCode<span class="x-char hero-x">X</span>
+			OraBridge<span class="x-char hero-x">X</span>
 			<br />
 			<span class="hero-Nexus">Nexus</span>
 		</h1>
@@ -162,6 +162,10 @@
 		letter-spacing: -0.04em;
 		color: var(--text-accent);
 		margin: 0;
+	}
+
+	.hero-x {
+		color: #00d4ff;
 	}
 
 	.hero-Nexus {

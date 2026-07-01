@@ -90,7 +90,8 @@
 		<span class="tile-label">
 			{#if size === 'hero'}
 				<span class="hero-title">{@html formatLabel(label)}</span>
-				<span class="hero-sub">The Intelligent Oracle Cloud Delivery Platform</span>
+				<span class="hero-sub">DeliveryX — A unified suite from Mythics of Oracle Cloud delivery accelerators engineered to simplify implementation, migration, conversion, and integration.</span>
+				<span class="hero-sub">Mythics DeliveryX brings together conversion, integration, validation, analytics, and cloud operations into a single intelligent ecosystem, enabling organizations to deliver Oracle Cloud programs faster, smarter, and with greater accuracy and confidence.</span>
 			{:else if size === 'wide'}
 				<span class="wide-title">{@html formatLabel(label)}</span>
 			{:else}
@@ -295,7 +296,7 @@
 		text-transform: none;
 		color: var(--text-muted);
 		line-height: 1.55;
-		max-width: 240px;
+		max-width: 100%;
 	}
 
 	.wide-title {

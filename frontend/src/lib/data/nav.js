@@ -14,20 +14,21 @@ export const NAV_ITEMS = [
 		gridArea: 'delivery',
 		size: 'hero',
 		subItems: [
-			{ label: 'Oracle Cloud ConverXion', href: '/delivery/conversion'   },
+			{ label: 'Smart Genesis ConveX',    href: '/delivery/conversion'   },
 			{ label: 'IntegraXion',             href: '/delivery/integration'  },
 			{ label: 'Cross ValidaXion',        href: '/delivery/validation'   },
 			{ label: 'DataXMining',             href: '/delivery/mining'       },
 			{ label: 'Cloud ActionX',           href: '/delivery/actions'      },
+			{ label: 'IntelliXight Report AI',  href: '/delivery/intellixight' },
 		],
 		children: [
 			{
 				id: 'conversion-group',
-				label: 'Oracle Cloud ConverXion',
+				label: 'Smart Genesis ConveX',
 				iconName: 'RefreshCw',
 				accent: '#00d4ff',
 				children: [
-					{ id: 'conversion', label: 'Oracle Cloud Conversion', href: '/delivery/conversion', iconName: 'RefreshCw', children: [] },
+					{ id: 'conversion', label: 'Smart Genesis ConveX', href: '/delivery/conversion', iconName: 'RefreshCw', children: [] },
 				],
 			},
 			{
@@ -80,6 +81,14 @@ export const NAV_ITEMS = [
 					{ id: 'reprocess',       label: 'Reprocess Transactions',  href: '/delivery/actions/reprocess',       iconName: 'RotateCcw',  children: [] },
 					{ id: 'rest-apis',       label: 'Custom REST APIs',        href: '/delivery/actions/rest-apis',       iconName: 'Code',       children: [] },
 				],
+			},
+			{
+				id: 'intellixight',
+				label: 'IntelliXight Report AI',
+				href: '/delivery/intellixight',
+				iconName: 'BarChart2',
+				accent: '#00d4ff',
+				children: [],
 			},
 		],
 	},
@@ -230,7 +239,7 @@ export function findNodeByPath(pathname) {
 
 export const TAGLINE = {
 	prefix:    'Welcome to ',
-	brand:     'OraCodeX Nexus',
+	brand:     'OraBridgeX Nexus',
 	separator: ' — The Intelligent Oracle Cloud Delivery Platform | ',
 	keywords: [
 		{ word: 'Extract',   color: '#ff4d6d' },
@@ -240,4 +249,10 @@ export const TAGLINE = {
 		{ word: 'Validate',  color: '#b39ddb' },
 		{ word: 'Deliver',   color: '#4fc3f7' },
 	],
+};
+
+export const SMART_GENESIS_TAGLINE = {
+	prefix:      'Welcome to ',
+	title:       'Smart Genesis ConveX',
+	description: 'The next generation Oracle Cloud conversion engine that transforms enterprise data into cloud-ready intelligence through precision-driven transformation.',
 };
