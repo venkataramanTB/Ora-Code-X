@@ -25,8 +25,9 @@
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
     "@sveltejs/adapter-node": "^5.5.7",
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@xyflow/svelte": "^1.6.1",
     "lucide-svelte": "^1.0.1",
-    "svelte-clerk": "^1.1.10",
-    "@sveltejs/adapter-static": "^3.0.10"
+    "svelte-clerk": "^1.1.10"
   }
 }
