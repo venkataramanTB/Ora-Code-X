@@ -26,6 +26,11 @@
 	function getInitials(u) {
 		return ((u?.firstName?.[0] ?? '') + (u?.lastName?.[0] ?? '')).toUpperCase() || '?';
 	}
+
+	/** Wraps every capital X in the tagline with a blue neon span. */
+	function colorX(text) {
+		return text.replace(/X/g, '<span class="tagline-x">X</span>');
+	}
 </script>
 
 <header class="topbar" style:height="{$topbarH + $taglineH}px">
@@ -102,7 +107,7 @@
 			<span class="marquee-track">
 				{#each [0, 1] as _}
 					<span class="marquee-seg">
-						{TAGLINE.prefix}<strong>{TAGLINE.brand}</strong>{TAGLINE.separator}{#each TAGLINE.keywords as kw, i}<span style="color:{kw.color}">{kw.word}</span>{i < TAGLINE.keywords.length - 1 ? '. ' : '.'}{/each}&nbsp;&nbsp;&nbsp;&nbsp;
+						{TAGLINE.prefix}<strong>{@html colorX(TAGLINE.brand)}</strong>{@html colorX(TAGLINE.separator)}&nbsp;&nbsp;&nbsp;&nbsp;
 					</span>
 				{/each}
 			</span>
@@ -420,4 +425,10 @@
 
 	.marquee-seg { padding-right: 48px; }
 	.marquee-seg strong { color: var(--text-primary); font-weight: 600; }
+
+	:global(.tagline-x) {
+		color: #00d4ff;
+		text-shadow: 0 0 8px rgba(0, 212, 255, 0.7);
+		font-weight: 700;
+	}
 </style>
