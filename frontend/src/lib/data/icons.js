@@ -4,6 +4,7 @@ import {
 	ChevronRight, ChevronDown, Palette, Check,
 	Moon, Sun,
 	// Navigation tree icons
+	BarChart2,
 	RefreshCw, GitMerge, ArrowDownToLine, ArrowUpToLine,
 	ChartBar, FileCode, CircleCheck, ListChecks, SquareCheck,
 	Database, Zap, Trash2, CircleX, PackageX, ClipboardX,
@@ -17,6 +18,7 @@ export const ICON_MAP = {
 	PieChart, Shield, Menu, X, Search, User,
 	ChevronRight, ChevronDown, Palette, Check,
 	Moon, Sun,
+	BarChart2,
 	RefreshCw, GitMerge, ArrowDownToLine, ArrowUpToLine,
 	ChartBar, FileCode, CircleCheck, ListChecks, SquareCheck,
 	Database, Zap, Trash2, CircleX, PackageX, ClipboardX,
