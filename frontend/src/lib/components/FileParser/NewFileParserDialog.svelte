@@ -1,4 +1,6 @@
 <script>
+	import { useClerkContext } from 'svelte-clerk';
+	import { apiUpload } from '$lib/api.js';
 	import Step1Upload from './steps/Step1Upload.svelte';
 	import Step2Layout from './steps/Step2Layout.svelte';
 
@@ -7,16 +9,21 @@
 	 * @typedef {{ name: string, data_type: string, position?: number, start_pos?: number, length?: number, trim?: boolean }} ColumnDef
 	 */
 
+	const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
+	const { session, clerk } = useClerkContext();
+	const auth = { session, signOut: () => clerk?.signOut() ?? Promise.resolve() };
+
 	/** @type {{ onSave: (data: any) => Promise<void>, onClose: () => void }} */
 	let { onSave, onClose } = $props();
 
-	let step  = $state(1);
-	let saving = $state(false);
-	let error  = $state('');
+	let step           = $state(1);
+	let saving         = $state(false);
+	let parsingHeaders = $state(false);
+	let error          = $state('');
 
 	// ── Step 1 state ──────────────────────────────────────────────────────────
-	/** @type {{ name: string, file: File|null, parseType: ParseType|null }} */
-	let step1 = $state({ name: '', file: null, parseType: null });
+	/** @type {{ name: string, file: File|null, parseType: ParseType|null, hasHeader: boolean }} */
+	let step1 = $state({ name: '', file: null, parseType: null, hasHeader: true });
 
 	// ── Step 2 state ──────────────────────────────────────────────────────────
 	/** @type {{ parseType: ParseType, delimiterChar: string, customDelimiter: string, hasHeader: boolean, columns: ColumnDef[] }} */
@@ -31,13 +38,18 @@
 	// ── Validation ────────────────────────────────────────────────────────────
 	const fileExt = $derived(step1.file?.name.split('.').pop()?.toLowerCase() ?? '');
 
-	// Derive effective step2 by overlaying step1's parseType — no write-back, no reactive loop
-	const step2Effective = $derived({ ...step2, parseType: step1.parseType ?? step2.parseType });
+	// Overlay step1 values — keeps step2 write-back clean with no reactive loops
+	const step2Effective = $derived({
+		...step2,
+		parseType:  step1.parseType ?? step2.parseType,
+		hasHeader:  step1.hasHeader,
+	});
 
 	const step1Valid = $derived(
 		step1.name.trim().length > 0 &&
 		step1.file !== null &&
-		(fileExt === 'csv' || (fileExt === 'txt' && step1.parseType !== null))
+		(fileExt === 'csv' || fileExt === 'xls' || fileExt === 'xlsx' ||
+		 (fileExt === 'txt' && step1.parseType !== null))
 	);
 
 	const step2Valid = $derived(
@@ -46,8 +58,49 @@
 	);
 
 	// ── Navigation ───────────────────────────────────────────────────────────
-	function goNext() {
-		if (step1Valid) { step = 2; error = ''; }
+	async function goNext() {
+		if (!step1Valid || parsingHeaders) return;
+
+		// Reset columns so a fresh Next always reflects the current file
+		step2 = { ...step2, columns: [] };
+		error = '';
+
+		if (step1.hasHeader && step1.file) {
+			parsingHeaders = true;
+			try {
+				const fd = new FormData();
+				fd.append('file', step1.file);
+				fd.append('has_header', 'true');
+				fd.append('parse_type', step1.parseType ?? 'delimited');
+				if (step2.delimiterChar && step2.delimiterChar !== '__custom__') {
+					fd.append('delimiter_char', step2.delimiterChar);
+				}
+				const res = await apiUpload(`${API}/api/parsers/parse-headers`, fd, auth);
+				if (res.ok) {
+					const data = await res.json();
+					const isFixed = (step1.parseType ?? 'delimited') === 'fixed_length';
+					if (data.columns?.length > 0) {
+						step2 = {
+							...step2,
+							columns: data.columns.map(/** @param {any} c */ c =>
+								isFixed
+									? { name: c.name, data_type: 'String', start_pos: 1, length: 1, trim: true }
+									: { name: c.name, data_type: 'String', position: c.position }
+							),
+						};
+					}
+					if (data.detected_delimiter) {
+						step2 = { ...step2, delimiterChar: data.detected_delimiter };
+					}
+				}
+			} catch {
+				// Non-fatal — user can add columns manually in Step 2
+			} finally {
+				parsingHeaders = false;
+			}
+		}
+
+		step = 2;
 	}
 
 	function goBack() { step = 1; error = ''; }
@@ -77,7 +130,7 @@
 			file_extension:    fileExt,
 			parse_type:        parseType,
 			delimiter_char:    resolvedDelimiter,
-			has_header:        parseType === 'fixed_length' ? null : step2.hasHeader,
+			has_header:        parseType === 'fixed_length' ? null : step1.hasHeader,
 			columns:           step2.columns.map((c, idx) => ({
 				name:      c.name.trim(),
 				data_type: c.data_type,
@@ -173,11 +226,16 @@
 		<div class="dlg-footer">
 			{#if step === 1}
 				<button class="btn btn-ghost" onclick={onClose}>Cancel</button>
-				<button class="btn btn-primary" onclick={goNext} disabled={!step1Valid}>
-					Next
-					<svg viewBox="0 0 20 20" fill="none" width="14" height="14">
-						<path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-					</svg>
+				<button class="btn btn-primary" onclick={goNext} disabled={!step1Valid || parsingHeaders}>
+					{#if parsingHeaders}
+						<span class="btn-spinner"></span>
+						Parsing…
+					{:else}
+						Next
+						<svg viewBox="0 0 20 20" fill="none" width="14" height="14">
+							<path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					{/if}
 				</button>
 			{:else}
 				<button class="btn btn-ghost" onclick={goBack}>← Back</button>

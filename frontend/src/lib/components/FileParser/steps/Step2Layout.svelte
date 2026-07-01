@@ -85,22 +85,6 @@
 			{/if}
 		</div>
 
-		<!-- ── Header toggle ── -->
-		<div class="section">
-			<span class="section-label">First Row is Header?</span>
-			<div class="toggle-row">
-				{#each [true, false] as opt (opt)}
-					<button
-						type="button"
-						class="toggle-btn"
-						class:active={value.hasHeader === opt}
-						onclick={() => onchange({ ...value, hasHeader: opt })}
-					>
-						{opt ? 'Yes' : 'No'}
-					</button>
-				{/each}
-			</div>
-		</div>
 	{/if}
 
 	<!-- ── Column builder ── -->
@@ -236,18 +220,6 @@
 	}
 	.del-btn:hover { background: rgba(255,77,109,0.08); border-color: rgba(255,77,109,0.2); color: var(--text-primary); }
 	.del-btn.active { background: rgba(255,77,109,0.12); border-color: rgba(255,77,109,0.4); color: #ff4d6d; font-weight: 600; }
-
-	/* ── Header toggle ── */
-	.toggle-row { display: flex; gap: 8px; }
-	.toggle-btn {
-		padding: 7px 22px; border-radius: 9px;
-		border: 1px solid rgba(255,255,255,0.09);
-		background: rgba(255,255,255,0.03);
-		color: var(--text-muted); font-size: 13px; font-weight: 500;
-		cursor: pointer; transition: background .14s, border-color .14s, color .14s;
-	}
-	.toggle-btn:hover { background: rgba(255,77,109,0.08); color: var(--text-primary); }
-	.toggle-btn.active { background: rgba(255,77,109,0.12); border-color: rgba(255,77,109,0.4); color: #ff4d6d; font-weight: 600; }
 
 	/* ── Column builder ── */
 	.col-header-row { display: flex; align-items: center; justify-content: space-between; }

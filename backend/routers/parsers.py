@@ -1,3 +1,5 @@
+import csv as _csv
+import io as _io
 import json
 import logging
 import uuid
@@ -5,7 +7,7 @@ from datetime import datetime
 from typing import Any, Literal, Optional
 
 import asyncpg
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from pydantic import BaseModel, field_validator, model_validator
 
 from auth import require_admin
@@ -52,7 +54,12 @@ class ColumnDef(BaseModel):
         return v
 
 
-def _check_columns(parse_type: str, delimiter_char: Optional[str], columns: list[ColumnDef]) -> None:
+def _check_columns(
+    parse_type: str,
+    delimiter_char: Optional[str],
+    columns: list[ColumnDef],
+    file_extension: str = "",
+) -> None:
     """Shared cross-field validation called from both ParserIn and ParserUpdate."""
     if not columns:
         raise ValueError("At least one column is required")
@@ -63,8 +70,9 @@ def _check_columns(parse_type: str, delimiter_char: Optional[str], columns: list
     if len(names) != len(set(names)):
         raise ValueError("Column names must be unique within a parser")
 
+    is_excel = file_extension in ("xls", "xlsx")
     if parse_type == "delimited":
-        if not delimiter_char:
+        if not is_excel and not delimiter_char:
             raise ValueError("delimiter_char is required for delimited parsers")
     else:
         for col in columns:
@@ -77,7 +85,7 @@ def _check_columns(parse_type: str, delimiter_char: Optional[str], columns: list
 class ParserIn(BaseModel):
     name: str
     original_filename: str
-    file_extension: Literal["csv", "txt"]
+    file_extension: Literal["csv", "txt", "xls", "xlsx"]
     parse_type: Literal["fixed_length", "delimited"]
     delimiter_char: Optional[str] = None
     has_header: Optional[bool] = None
@@ -102,7 +110,7 @@ class ParserIn(BaseModel):
 
     @model_validator(mode="after")
     def cross_field(self) -> "ParserIn":
-        _check_columns(self.parse_type, self.delimiter_char, self.columns)
+        _check_columns(self.parse_type, self.delimiter_char, self.columns, self.file_extension)
         return self
 
 
@@ -175,6 +183,78 @@ _SELECT = """
            delimiter_char, has_header, columns, status, created_at, updated_at
     FROM file_parsers
 """
+
+
+# ── POST /api/parsers/parse-headers ──────────────────────────────────────────
+
+@router.post("/parse-headers")
+async def parse_file_headers(
+    file: UploadFile = File(...),
+    has_header: str = Form("true"),
+    parse_type: str = Form("delimited"),
+    delimiter_char: Optional[str] = Form(None),
+    _user_id: str = Depends(require_admin),
+):
+    """Read the first row of an uploaded file and return column names."""
+    if has_header.lower() != "true":
+        return {"columns": [], "detected_delimiter": None}
+
+    filename = file.filename or ""
+    ext = filename.lower().rsplit(".", 1)[-1] if "." in filename else ""
+
+    contents = await file.read()
+    if len(contents) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="File too large for header preview (max 5 MB)")
+
+    columns: list[dict] = []
+    detected_delimiter: Optional[str] = None
+
+    if ext == "xlsx":
+        import openpyxl  # noqa: PLC0415
+        wb = openpyxl.load_workbook(_io.BytesIO(contents), read_only=True, data_only=True)
+        ws = wb.active
+        first_row = next(ws.iter_rows(min_row=1, max_row=1, values_only=True), None)
+        wb.close()
+        if first_row:
+            columns = [
+                {"name": str(v).strip(), "position": i}
+                for i, v in enumerate(first_row, start=1)
+                if v is not None and str(v).strip()
+            ]
+
+    elif ext == "xls":
+        import xlrd  # noqa: PLC0415
+        wb = xlrd.open_workbook(file_contents=contents)
+        ws = wb.sheet_by_index(0)
+        if ws.nrows > 0:
+            columns = [
+                {"name": str(v).strip(), "position": i}
+                for i, v in enumerate(ws.row_values(0), start=1)
+                if v is not None and str(v).strip()
+            ]
+
+    elif ext in ("csv", "txt"):
+        text = contents.decode("utf-8-sig", errors="replace")
+        delim = delimiter_char
+        if not delim:
+            try:
+                dialect = _csv.Sniffer().sniff(text[:4096], delimiters=",\t|;")
+                delim = dialect.delimiter
+                detected_delimiter = delim
+            except _csv.Error:
+                delim = ","
+        reader = _csv.reader(_io.StringIO(text), delimiter=delim)
+        first_row_vals = next(reader, [])
+        columns = [
+            {"name": name.strip(), "position": i}
+            for i, name in enumerate(first_row_vals, start=1)
+            if name.strip()
+        ]
+
+    else:
+        raise HTTPException(status_code=422, detail=f"Unsupported file type: .{ext}")
+
+    return {"columns": columns, "detected_delimiter": detected_delimiter}
 
 
 # ── GET /api/parsers ──────────────────────────────────────────────────────────

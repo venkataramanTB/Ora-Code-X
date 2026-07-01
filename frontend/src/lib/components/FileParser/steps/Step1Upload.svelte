@@ -1,7 +1,7 @@
 <script>
 	/**
 	 * @typedef {'fixed_length'|'delimited'} ParseType
-	 * @typedef {{ name: string, file: File|null, parseType: ParseType|null }} Step1State
+	 * @typedef {{ name: string, file: File|null, parseType: ParseType|null, hasHeader: boolean }} Step1State
 	 */
 
 	/** @type {{ value: Step1State, onchange: (s: Step1State) => void }} */
@@ -10,14 +10,14 @@
 	let dragging = $state(false);
 	let fileInput = $state(/** @type {HTMLInputElement|null} */ (null));
 
-	const ACCEPTED = ['.csv', '.txt'];
+	const ACCEPTED = ['.csv', '.txt', '.xls', '.xlsx'];
 
 	/** @param {File} file */
 	function applyFile(file) {
 		const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
-		if (!['csv', 'txt'].includes(ext)) return;
+		if (!['csv', 'txt', 'xls', 'xlsx'].includes(ext)) return;
 		/** @type {ParseType|null} */
-		const autoParseType = ext === 'csv' ? 'delimited' : null;
+		const autoParseType = (ext === 'csv' || ext === 'xls' || ext === 'xlsx') ? 'delimited' : null;
 		onchange({ ...value, file, parseType: autoParseType });
 	}
 
@@ -42,11 +42,14 @@
 
 	/** @param {string} ext */
 	function extBadgeColor(ext) {
-		return ext === 'csv' ? '#00e676' : '#4fc3f7';
+		if (ext === 'csv') return '#00e676';
+		if (ext === 'xls' || ext === 'xlsx') return '#f5a623';
+		return '#4fc3f7';
 	}
 
-	const fileExt = $derived(value.file?.name.split('.').pop()?.toLowerCase() ?? '');
-	const isTxt   = $derived(fileExt === 'txt');
+	const fileExt  = $derived(value.file?.name.split('.').pop()?.toLowerCase() ?? '');
+	const isTxt    = $derived(fileExt === 'txt');
+	const isExcel  = $derived(fileExt === 'xls' || fileExt === 'xlsx');
 </script>
 
 <div class="step">
@@ -104,7 +107,7 @@
 				</svg>
 				<p class="drop-title">{dragging ? 'Release to upload' : 'Drop your file here'}</p>
 				<p class="drop-sub">or <span class="browse-link">click to browse</span></p>
-				<p class="drop-types">Accepts .csv and .txt</p>
+				<p class="drop-types">Accepts .csv, .txt, .xls, .xlsx</p>
 			</div>
 		{/if}
 
@@ -135,6 +138,32 @@
 				<option value="fixed_length">Fixed Length</option>
 			</select>
 			<span class="field-hint">How are the columns separated in this file?</span>
+		</div>
+	{/if}
+
+	<!-- First line has headers toggle — hidden for fixed-length since headers don't apply -->
+	{#if !isTxt || value.parseType !== 'fixed_length'}
+		<div class="field">
+			<span class="field-label">First Line Has Headers?</span>
+			<div class="toggle-row">
+				{#each [true, false] as opt (opt)}
+					<button
+						type="button"
+						class="toggle-btn"
+						class:active={value.hasHeader === opt}
+						onclick={() => onchange({ ...value, hasHeader: opt })}
+					>
+						{opt ? 'Yes' : 'No'}
+					</button>
+				{/each}
+			</div>
+			<span class="field-hint">
+				{value.hasHeader
+					? isExcel
+						? 'Column names will be auto-detected from row 1 of the spreadsheet'
+						: 'Column names will be auto-detected from the first row'
+					: 'All rows will be treated as data — columns must be defined manually'}
+			</span>
 		</div>
 	{/if}
 </div>
@@ -214,6 +243,18 @@
 		cursor: pointer; transition: background .14s, color .14s;
 	}
 	.clear-btn:hover { background: rgba(255,77,109,0.12); color: #ff4d6d; border-color: rgba(255,77,109,0.3); }
+
+	/* ── Header toggle ── */
+	.toggle-row { display: flex; gap: 8px; }
+	.toggle-btn {
+		padding: 7px 22px; border-radius: 9px;
+		border: 1px solid rgba(255,255,255,0.09);
+		background: rgba(255,255,255,0.03);
+		color: var(--text-muted); font-size: 13px; font-weight: 500;
+		cursor: pointer; transition: background .14s, border-color .14s, color .14s;
+	}
+	.toggle-btn:hover { background: rgba(255,77,109,0.08); color: var(--text-primary); }
+	.toggle-btn.active { background: rgba(255,77,109,0.12); border-color: rgba(255,77,109,0.4); color: #ff4d6d; font-weight: 600; }
 
 	/* ── Select ── */
 	.select {
