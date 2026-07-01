@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from db import close_pool, init_db
 from routers.connections import router as connections_router
+from routers.fbdi import router as fbdi_router
 from routers.parsers import router as parsers_router
 
 
@@ -43,3 +44,4 @@ async def health():
 
 app.include_router(connections_router, prefix="/api/connections")
 app.include_router(parsers_router, prefix="/api/parsers")
+app.include_router(fbdi_router, prefix="/api/fbdi")
