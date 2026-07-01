@@ -112,7 +112,6 @@
 <style>
 	.main-content {
 		position: relative;
-		z-index: 1;
 		min-height: 100vh;
 		padding-top: 120px;
 		display: flex;
