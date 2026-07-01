@@ -239,16 +239,9 @@ export function findNodeByPath(pathname) {
 
 export const TAGLINE = {
 	prefix:    'Welcome to ',
-	brand:     'OraBridgeX Nexus',
-	separator: ' — The Intelligent Oracle Cloud Delivery Platform | ',
-	keywords: [
-		{ word: 'Extract',   color: '#ff4d6d' },
-		{ word: 'Convert',   color: '#00d4ff' },
-		{ word: 'Integrate', color: '#00e676' },
-		{ word: 'Actions',   color: '#ff9800' },
-		{ word: 'Validate',  color: '#b39ddb' },
-		{ word: 'Deliver',   color: '#4fc3f7' },
-	],
+	brand:     'Smart Genesis ConveX',
+	separator: ' — The next generation Oracle Cloud conversion engine that transforms enterprise data into cloud-ready intelligence through precision-driven transformation.',
+	keywords:  [],
 };
 
 export const SMART_GENESIS_TAGLINE = {
