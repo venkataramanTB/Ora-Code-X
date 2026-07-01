@@ -3,7 +3,7 @@
 	import { useClerkContext } from 'svelte-clerk';
 	import { ICON_MAP } from '$lib/data/icons.js';
 	import { apiFetch } from '$lib/api.js';
-	import { NewFileParserDialog } from '$lib/components/FileParser/index.js';
+	import { NewFileParserDialog, EditFileParserDialog } from '$lib/components/FileParser/index.js';
 
 	const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 
@@ -22,6 +22,7 @@
 	let loading    = $state(true);
 	let fetchError = $state('');
 	let dialogOpen = $state(false);
+	let editingParser = $state(/** @type {any|null} */ (null));
 	let deletingId = $state(/** @type {string|null} */ (null));
 
 	/** @type {{ text: string, type: 'success'|'error' } | null} */
@@ -68,6 +69,19 @@
 		parsers = [data, ...parsers];
 		dialogOpen = false;
 		showToast('File parser created');
+	}
+
+	/** @param {string} id @param {any} payload */
+	async function updateParser(id, payload) {
+		const res  = await apiFetch(`${API}/api/parsers/${id}`, {
+			method: 'PUT',
+			body: JSON.stringify(payload),
+		}, auth);
+		const data = await res.json();
+		if (!res.ok) throw new Error(data.detail ?? data.error ?? `Server error ${res.status}`);
+		parsers = parsers.map(p => p.id === id ? data : p);
+		editingParser = null;
+		showToast('Parser updated');
 	}
 
 	/** @param {string} id */
@@ -124,6 +138,15 @@
 	<NewFileParserDialog
 		onSave={saveParser}
 		onClose={() => { dialogOpen = false; }}
+	/>
+{/if}
+
+<!-- Edit parser dialog -->
+{#if editingParser}
+	<EditFileParserDialog
+		parser={editingParser}
+		onSave={payload => updateParser(editingParser.id, payload)}
+		onClose={() => { editingParser = null; }}
 	/>
 {/if}
 
@@ -240,7 +263,7 @@
 								<button class="btn-sm btn-ghost-sm" onclick={() => (deletingId = null)}>No</button>
 							</span>
 						{:else}
-							<button class="action-btn edit-btn" title="Edit (coming soon)" disabled>
+							<button class="action-btn edit-btn" title="Edit" onclick={() => { editingParser = parser; }}>
 								{#if EditIcon}<EditIcon size={12} />{/if} Edit
 							</button>
 							<button class="action-btn delete-btn" onclick={() => (deletingId = parser.id)} title="Delete">
