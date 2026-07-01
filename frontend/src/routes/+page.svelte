@@ -47,14 +47,16 @@
 		<p class="eyebrow">Welcome to</p>
 
 		<h1 class="hero-title">
-			OraBridge<span class="x-char hero-x">X</span>
-			<br />
-			<span class="hero-Nexus">Nexus</span>
+			OraBridge<span class="x-char hero-x">X</span> Nexus
 		</h1>
 
 		<h2 class="hero-sub">
 			The Intelligent Oracle Cloud Delivery Platform
 		</h2>
+
+		<p class="hero-tagline">
+			Extract. Convert. Integrate. Actions. Validate. Deliver.
+		</p>
 
 		<button class="cta" onclick={openMenu}>
 			<span class="cta-menu-icon"><MenuIcon size={15} /></span>
@@ -168,19 +170,20 @@
 		color: #00d4ff;
 	}
 
-	.hero-Nexus {
-		font-size: clamp(36px, 6vw, 68px);
-		font-weight: 300;
-		color: var(--text-muted);
-		letter-spacing: -0.01em;
-	}
-
 	.hero-sub {
 		font-size: clamp(13px, 1.6vw, 15px);
 		color: var(--text-muted);
 		line-height: 1.6;
 		margin: 0;
 		opacity: 0.75;
+	}
+
+	.hero-tagline {
+		font-size: clamp(11px, 1.2vw, 13px);
+		color: var(--text-muted);
+		opacity: 0.5;
+		letter-spacing: 0.04em;
+		margin: 0;
 	}
 
 	/* ── CTA ─────────────────────────────────────────────── */
