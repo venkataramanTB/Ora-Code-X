@@ -64,7 +64,7 @@ def _row(record) -> dict:
 
 # ── GET /api/parsers ──────────────────────────────────────────────────────────
 
-@router.get("/", response_model=list[ParserOut])
+@router.get("", response_model=list[ParserOut])
 async def list_parsers(_user_id: str = Depends(require_admin)):
     pool = await get_pool()
     async with pool.acquire() as conn:
@@ -79,7 +79,7 @@ async def list_parsers(_user_id: str = Depends(require_admin)):
 
 # ── POST /api/parsers ─────────────────────────────────────────────────────────
 
-@router.post("/", response_model=ParserOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=ParserOut, status_code=status.HTTP_201_CREATED)
 async def create_parser(body: ParserIn, _user_id: str = Depends(require_admin)):
     import json
     pool = await get_pool()

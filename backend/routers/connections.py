@@ -115,7 +115,7 @@ async def list_connections(_user_id: str = Depends(require_admin)):
 
 # ── POST /api/connections ─────────────────────────────────────────────────────
 
-@router.post("/", response_model=ConnectionOut, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=ConnectionOut, status_code=status.HTTP_201_CREATED)
 async def create_connection(body: ConnectionIn, _user_id: str = Depends(require_admin)):
     valid, error = await validate_oracle_instance_url(body.instance_url)
     if not valid:
