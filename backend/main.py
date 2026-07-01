@@ -21,7 +21,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="OraCodeX Backend",
+    title="OraBridgeX Backend",
     version="1.0.0",
     lifespan=lifespan,
     redirect_slashes=False,

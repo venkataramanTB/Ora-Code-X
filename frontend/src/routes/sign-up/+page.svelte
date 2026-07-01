@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Sign Up — OraCodeX Nexus</title>
+	<title>Sign Up — OraBridgeX Nexus</title>
 </svelte:head>
 
 <div class="auth-page">

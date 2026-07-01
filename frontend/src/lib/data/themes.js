@@ -1,4 +1,4 @@
-export const THEME_KEY      = 'oracodex-theme';
+export const THEME_KEY      = 'OraBridgeX-theme';
 export const DEFAULT_THEME_ID = 'dark';
 
 export const THEMES = {

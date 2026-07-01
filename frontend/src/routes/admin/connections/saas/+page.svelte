@@ -207,7 +207,7 @@
 </script>
 
 <svelte:window onkeydown={onKeydown} />
-<svelte:head><title>Oracle Cloud SaaS Connections — OraCodeX Nexus</title></svelte:head>
+<svelte:head><title>Oracle Cloud SaaS Connections — OraBridgeX Nexus</title></svelte:head>
 
 <!-- ── Toast ─────────────────────────────────────────────────────────────────── -->
 {#if toast}

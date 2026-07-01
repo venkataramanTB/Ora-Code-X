@@ -1,5 +1,5 @@
-export const COLOR_KEY   = 'oracodex-color';
-export const STYLE_KEY   = 'oracodex-style';
+export const COLOR_KEY   = 'OraBridgeX-color';
+export const STYLE_KEY   = 'OraBridgeX-style';
 export const DEFAULT_COLOR_ID = 'dark';
 export const DEFAULT_STYLE_ID = 'neo';
 

@@ -80,7 +80,7 @@
 
 		<!-- Footer -->
 		<div class="sidebar-footer">
-			<span class="footer-label">OraCodeX Nexus</span>
+			<span class="footer-label">OraBridgeX Nexus</span>
 			<span class="footer-version">v1.0</span>
 		</div>
 	</nav>

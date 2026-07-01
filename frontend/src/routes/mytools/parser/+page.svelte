@@ -109,7 +109,7 @@
 	onMount(loadParsers);
 </script>
 
-<svelte:head><title>File Parser — OraCodeX Nexus</title></svelte:head>
+<svelte:head><title>File Parser — OraBridgeX Nexus</title></svelte:head>
 
 <!-- Toast -->
 {#if toast}
