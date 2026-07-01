@@ -1,3 +1,4 @@
+import json
 import uuid
 from datetime import datetime
 from typing import Any, Optional
@@ -59,7 +60,10 @@ class ParserOut(BaseModel):
 
 
 def _row(record) -> dict:
-    return dict(record)
+    d = dict(record)
+    if isinstance(d.get('columns'), str):
+        d['columns'] = json.loads(d['columns'])
+    return d
 
 
 # ── GET /api/parsers ──────────────────────────────────────────────────────────
@@ -81,7 +85,6 @@ async def list_parsers(_user_id: str = Depends(require_admin)):
 
 @router.post("", response_model=ParserOut, status_code=status.HTTP_201_CREATED)
 async def create_parser(body: ParserIn, _user_id: str = Depends(require_admin)):
-    import json
     pool = await get_pool()
     async with pool.acquire() as conn:
         try:
@@ -118,7 +121,6 @@ async def create_parser(body: ParserIn, _user_id: str = Depends(require_admin)):
 async def update_parser(
     parser_id: uuid.UUID, body: ParserUpdate, _user_id: str = Depends(require_admin)
 ):
-    import json
     pool = await get_pool()
     async with pool.acquire() as conn:
         try:
