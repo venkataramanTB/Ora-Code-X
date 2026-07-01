@@ -28,15 +28,11 @@
 		columns: [],
 	});
 
-	// Sync parseType from step1 into step2 whenever it changes
-	$effect(() => {
-		if (step1.parseType) {
-			step2 = { ...step2, parseType: step1.parseType };
-		}
-	});
-
 	// ── Validation ────────────────────────────────────────────────────────────
 	const fileExt = $derived(step1.file?.name.split('.').pop()?.toLowerCase() ?? '');
+
+	// Derive effective step2 by overlaying step1's parseType — no write-back, no reactive loop
+	const step2Effective = $derived({ ...step2, parseType: step1.parseType ?? step2.parseType });
 
 	const step1Valid = $derived(
 		step1.name.trim().length > 0 &&
@@ -66,8 +62,10 @@
 		saving = true;
 		error  = '';
 
+		const parseType = step2Effective.parseType;
+
 		const resolvedDelimiter =
-			step2.parseType === 'fixed_length'
+			parseType === 'fixed_length'
 				? null
 				: step2.delimiterChar === '__custom__'
 					? step2.customDelimiter || ','
@@ -77,16 +75,16 @@
 			name:              step1.name.trim(),
 			original_filename: step1.file?.name ?? '',
 			file_extension:    fileExt,
-			parse_type:        step2.parseType,
+			parse_type:        parseType,
 			delimiter_char:    resolvedDelimiter,
-			has_header:        step2.parseType === 'fixed_length' ? null : step2.hasHeader,
+			has_header:        parseType === 'fixed_length' ? null : step2.hasHeader,
 			columns:           step2.columns.map((c, idx) => ({
 				name:      c.name.trim(),
 				data_type: c.data_type,
-				position:  step2.parseType === 'delimited' ? idx + 1 : undefined,
-				start_pos: step2.parseType === 'fixed_length' ? c.start_pos : undefined,
-				length:    step2.parseType === 'fixed_length' ? c.length    : undefined,
-				trim:      step2.parseType === 'fixed_length' ? (c.trim ?? true) : undefined,
+				position:  parseType === 'delimited' ? idx + 1 : undefined,
+				start_pos: parseType === 'fixed_length' ? c.start_pos : undefined,
+				length:    parseType === 'fixed_length' ? c.length    : undefined,
+				trim:      parseType === 'fixed_length' ? (c.trim ?? true) : undefined,
 			})),
 		};
 
@@ -162,7 +160,7 @@
 			{#if step === 1}
 				<Step1Upload value={step1} onchange={v => { step1 = v; }} />
 			{:else}
-				<Step2Layout value={step2} onchange={v => { step2 = v; }} />
+				<Step2Layout value={step2Effective} onchange={v => { step2 = v; }} />
 			{/if}
 		</div>
 
