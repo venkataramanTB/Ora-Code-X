@@ -1,46 +1,139 @@
 import json
+import logging
 import uuid
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
+import asyncpg
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator, model_validator
 
 from auth import require_admin
 from db import get_pool
 
+log = logging.getLogger(__name__)
 router = APIRouter()
+
+_VALID_DATA_TYPES = frozenset({"String", "Integer", "Decimal", "Date", "Timestamp", "Boolean"})
+_MAX_NAME_LEN = 120
+_MAX_COLUMNS = 200
 
 
 # ── Pydantic schemas ──────────────────────────────────────────────────────────
 
 class ColumnDef(BaseModel):
     name: str
-    data_type: str                    # String | Integer | Decimal | Date | Timestamp | Boolean
-    # delimited only
+    data_type: str
     position: Optional[int] = None
-    # fixed-length only
     start_pos: Optional[int] = None
     length: Optional[int] = None
     trim: Optional[bool] = True
+
+    @field_validator("name")
+    @classmethod
+    def name_nonempty(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Column name cannot be blank")
+        return v
+
+    @field_validator("data_type")
+    @classmethod
+    def valid_data_type(cls, v: str) -> str:
+        if v not in _VALID_DATA_TYPES:
+            raise ValueError(f"data_type must be one of {sorted(_VALID_DATA_TYPES)}")
+        return v
+
+    @field_validator("start_pos", "length")
+    @classmethod
+    def positive_int(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and v < 1:
+            raise ValueError("start_pos and length must be ≥ 1")
+        return v
+
+
+def _check_columns(parse_type: str, delimiter_char: Optional[str], columns: list[ColumnDef]) -> None:
+    """Shared cross-field validation called from both ParserIn and ParserUpdate."""
+    if not columns:
+        raise ValueError("At least one column is required")
+    if len(columns) > _MAX_COLUMNS:
+        raise ValueError(f"Cannot define more than {_MAX_COLUMNS} columns")
+
+    names = [c.name for c in columns]
+    if len(names) != len(set(names)):
+        raise ValueError("Column names must be unique within a parser")
+
+    if parse_type == "delimited":
+        if not delimiter_char:
+            raise ValueError("delimiter_char is required for delimited parsers")
+    else:
+        for col in columns:
+            if col.start_pos is None or col.length is None:
+                raise ValueError(
+                    f'Column "{col.name}": start_pos and length are required for fixed-length parsers'
+                )
 
 
 class ParserIn(BaseModel):
     name: str
     original_filename: str
-    file_extension: str               # 'csv' | 'txt'
-    parse_type: str                   # 'fixed_length' | 'delimited'
+    file_extension: Literal["csv", "txt"]
+    parse_type: Literal["fixed_length", "delimited"]
     delimiter_char: Optional[str] = None
     has_header: Optional[bool] = None
     columns: list[ColumnDef] = []
+
+    @field_validator("name")
+    @classmethod
+    def name_clean(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Parser name cannot be blank")
+        if len(v) > _MAX_NAME_LEN:
+            raise ValueError(f"Parser name must be ≤ {_MAX_NAME_LEN} characters")
+        return v
+
+    @field_validator("delimiter_char")
+    @classmethod
+    def single_char(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and len(v) != 1:
+            raise ValueError("delimiter_char must be exactly one character")
+        return v
+
+    @model_validator(mode="after")
+    def cross_field(self) -> "ParserIn":
+        _check_columns(self.parse_type, self.delimiter_char, self.columns)
+        return self
 
 
 class ParserUpdate(BaseModel):
     name: str
-    parse_type: str
+    parse_type: Literal["fixed_length", "delimited"]
     delimiter_char: Optional[str] = None
     has_header: Optional[bool] = None
     columns: list[ColumnDef] = []
+
+    @field_validator("name")
+    @classmethod
+    def name_clean(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Parser name cannot be blank")
+        if len(v) > _MAX_NAME_LEN:
+            raise ValueError(f"Parser name must be ≤ {_MAX_NAME_LEN} characters")
+        return v
+
+    @field_validator("delimiter_char")
+    @classmethod
+    def single_char(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and len(v) != 1:
+            raise ValueError("delimiter_char must be exactly one character")
+        return v
+
+    @model_validator(mode="after")
+    def cross_field(self) -> "ParserUpdate":
+        _check_columns(self.parse_type, self.delimiter_char, self.columns)
+        return self
 
 
 class ParserOut(BaseModel):
@@ -59,11 +152,29 @@ class ParserOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
 def _row(record) -> dict:
+    """Convert asyncpg Record to dict, safely deserializing the columns JSONB field."""
     d = dict(record)
-    if isinstance(d.get('columns'), str):
-        d['columns'] = json.loads(d['columns'])
+    raw = d.get("columns")
+    if isinstance(raw, str):
+        try:
+            d["columns"] = json.loads(raw)
+        except (json.JSONDecodeError, ValueError):
+            log.error("Corrupt columns JSON for parser id=%s — falling back to []", d.get("id"))
+            d["columns"] = []
+    elif raw is None:
+        d["columns"] = []
+    # already a list (native asyncpg jsonb decode) — pass through
     return d
+
+
+_SELECT = """
+    SELECT id, name, original_filename, file_extension, parse_type,
+           delimiter_char, has_header, columns, status, created_at, updated_at
+    FROM file_parsers
+"""
 
 
 # ── GET /api/parsers ──────────────────────────────────────────────────────────
@@ -72,13 +183,20 @@ def _row(record) -> dict:
 async def list_parsers(_user_id: str = Depends(require_admin)):
     pool = await get_pool()
     async with pool.acquire() as conn:
-        rows = await conn.fetch("""
-            SELECT id, name, original_filename, file_extension, parse_type,
-                   delimiter_char, has_header, columns, status, created_at, updated_at
-            FROM file_parsers
-            ORDER BY created_at DESC
-        """)
+        rows = await conn.fetch(_SELECT + "ORDER BY created_at DESC")
     return [ParserOut.model_validate(_row(r)) for r in rows]
+
+
+# ── GET /api/parsers/{id} ─────────────────────────────────────────────────────
+
+@router.get("/{parser_id}", response_model=ParserOut)
+async def get_parser(parser_id: uuid.UUID, _user_id: str = Depends(require_admin)):
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow(_SELECT + "WHERE id = $1", parser_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="Parser not found")
+    return ParserOut.model_validate(_row(row))
 
 
 # ── POST /api/parsers ─────────────────────────────────────────────────────────
@@ -104,13 +222,11 @@ async def create_parser(body: ParserIn, _user_id: str = Depends(require_admin)):
                 body.has_header,
                 json.dumps([c.model_dump() for c in body.columns]),
             )
-        except Exception as exc:
-            if "unique" in str(exc).lower():
-                raise HTTPException(
-                    status_code=409,
-                    detail=f'A parser named "{body.name}" already exists',
-                )
-            raise HTTPException(status_code=500, detail=str(exc))
+        except asyncpg.UniqueViolationError:
+            raise HTTPException(status_code=409, detail=f'A parser named "{body.name}" already exists')
+        except asyncpg.PostgresError as exc:
+            log.error("DB error creating parser name=%r: %s", body.name, exc)
+            raise HTTPException(status_code=500, detail="Database error — parser not created")
 
     return ParserOut.model_validate(_row(row))
 
@@ -142,13 +258,11 @@ async def update_parser(
                 json.dumps([c.model_dump() for c in body.columns]),
                 parser_id,
             )
-        except Exception as exc:
-            if "unique" in str(exc).lower():
-                raise HTTPException(
-                    status_code=409,
-                    detail=f'A parser named "{body.name}" already exists',
-                )
-            raise HTTPException(status_code=500, detail=str(exc))
+        except asyncpg.UniqueViolationError:
+            raise HTTPException(status_code=409, detail=f'A parser named "{body.name}" already exists')
+        except asyncpg.PostgresError as exc:
+            log.error("DB error updating parser id=%s: %s", parser_id, exc)
+            raise HTTPException(status_code=500, detail="Database error — parser not updated")
 
     if row is None:
         raise HTTPException(status_code=404, detail="Parser not found")
