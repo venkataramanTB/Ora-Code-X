@@ -239,8 +239,8 @@ export function findNodeByPath(pathname) {
 
 export const TAGLINE = {
 	prefix:    'Welcome to ',
-	brand:     'Smart Genesis ConveX',
-	separator: ' — The next generation Oracle Cloud conversion engine that transforms enterprise data into cloud-ready intelligence through precision-driven transformation.',
+	brand:     'OraBridgeX Nexus',
+	separator: ' — The Intelligent Oracle Cloud Delivery Platform | Extract. Convert. Integrate. Actions. Validate. Deliver.',
 	keywords:  [],
 };
 
